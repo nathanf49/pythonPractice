@@ -1,9 +1,9 @@
-class node: #create node data structure
+class node: #create node data structure, nodes will have data and point to next node
     def __init__(self, data): #takes in a data value
         self.data = data #read data value into Node
         self.next = None #default for Node is to have no next value to account for last value in list
 
-class singlyLinkedList:
+class singlyLinkedList: #create linked list data structure to hold nodes
     def __init__(self):
         self.head = None #default is empty list
 
