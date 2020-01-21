@@ -20,7 +20,10 @@ Explanation:
 7896 contains 4 digits (even number of digits). 
 Therefore only 12 and 7896 contain an even number of digits.
 """
+nums = [555,901,482,1771]
 
 evenCount = 0 #initialize count for number of even numbers
-        for num in nums:
-            if num 
+for num in nums:
+    if len(str(num)) % 2 == 0:
+        evenCount += 1
+print(evenCount)
