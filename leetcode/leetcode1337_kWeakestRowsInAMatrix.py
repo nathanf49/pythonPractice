@@ -1,32 +1,36 @@
 # -*- coding: utf-8 -*-
-"""
-Given a m * n matrix mat of ones (representing soldiers) and zeros (representing civilians), return the indexes of the k weakest rows in the matrix ordered from the weakest to the strongest.
+"""Given a m * n matrix mat of ones (representing soldiers) and zeros (representing civilians), return the indexes of
+the k weakest rows in the matrix ordered from the weakest to the strongest.
 
-A row i is weaker than row j, if the number of soldiers in row i is less than the number of soldiers in row j, or they have the same number of soldiers but i is less than j. Soldiers are always stand in the frontier of a row, that is, always ones may appear first and then zeros.
-"""
+A row i is weaker than row j, if the number of soldiers in row i is less than the number of soldiers in row j,
+or they have the same number of soldiers but i is less than j. Soldiers are always stand in the frontier of a row,
+that is, always ones may appear first and then zeros. """
+
+
 def kWeakestRows(mat, k):
     rowName = 0
     out = []
     for row in mat:
-        row.append(sum(row)) #puts score on end
-        row.append(rowName) #puts rowName on end
+        row.append(sum(row))  # puts score on end
+        row.append(rowName)  # puts rowName on end
         rowName += 1
     while k > 0:
-        weak = [99999999, 0] #initialize weakest row at extremely high score and row number
-        for row in mat: #finds weakest row
-            if row[-2] < weak[0]: #row[-2] is score
+        weak = [99999999, 0]  # initialize weakest row at extremely high score and row number
+        for row in mat:  # finds weakest row
+            if row[-2] < weak[0]:  # row[-2] is score
                 weak[0] = row[-2]
-                weak[1] = row[-1] #row[-1] is name
+                weak[1] = row[-1]  # row[-1] is name
         out.append(weak[1])
-        mat[weak[1]][-2] = 99999999 #set score very high so it won't come up as min score agian
+        mat[weak[1]][-2] = 99999999  # set score very high so it won't come up as min score agian
         k -= 1
-    return(out)
+    return out
 
-matrix = [[1,1,0,0,0],
- [1,1,1,1,0],
- [1,0,0,0,0],
- [1,1,0,0,0],
- [1,1,1,1,1]]
+
+matrix = [[1, 1, 0, 0, 0],
+          [1, 1, 1, 1, 0],
+          [1, 0, 0, 0, 0],
+          [1, 1, 0, 0, 0],
+          [1, 1, 1, 1, 1]]
 rows = 3
 print(kWeakestRows(matrix, rows))
 """

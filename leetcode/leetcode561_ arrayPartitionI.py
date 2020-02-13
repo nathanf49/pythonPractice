@@ -5,12 +5,13 @@ say (a1, b1), (a2, b2), ..., (an, bn) which makes sum of min(ai, bi) for all i f
 """
 def arrayPairSum(nums):
     nums.sort()
-    return(sum(nums[0:len(nums:2]))
+    return(sum(nums[0:len(nums):2]))
 nums = []
 import random
 numsLen = random.randint(1,10000)
 for i in range(2*numsLen):
     nums.append(random.randint(-10000,10000))
+nums = [1,4,3,2]
 print(arrayPairSum(nums))    
 """
 Example 1:
