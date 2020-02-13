@@ -479,6 +479,14 @@ finally:                 #  Execute under all circumstances
 with open("myfile.txt") as f:
     for line in f:
         print(line)
+        
+# Enforcing expectations (often used to check inputs and outputs)
+def functionThatTakesInt(x):
+    '''
+    x must be int
+    '''
+    assert(x is not int, 'Please enter x as an int')
+    #throws AssertionError: "Please enter x as an int" if x is not int
 
 # Writing to a file
 contents = {"aa": 12, "bb": 21}
