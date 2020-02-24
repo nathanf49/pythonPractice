@@ -8,7 +8,8 @@ def trap(height):
     for pos in range(len(height)): #rerunning positions between walls
         if height[pos+1] < height[pos]: #water starts when wall goes down
             startWall = pos #saves starting position of wall
-            while (height[pos+1] < height[startWall]) #and (height[pos+1] < height[pos+2]): #checks next positions until finding one that stops water
+            endFinder = pos + 1
+            while (height[endFinder] < height[startWall]) #and (height[pos+1] < height[pos+2]): #checks next positions until finding one that stops water
                 pos += 1
             endWall = nextPos
             waterWalls.append((startWall,endWall))
