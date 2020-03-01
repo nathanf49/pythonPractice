@@ -1,0 +1,198 @@
+
+New request: www.sec.gov. Accessed: 2018-03-2208:47:29:030745
+1- www.sec.gov.
+2- www.ebay.com.
+3- www.berkshirewear.com.
+4- www.geico.com.
+5- safebrowsing.google.com.
+There were 5 unique DNS requests
+
+New request: wendys.com. Accessed: 2018-03-2208:47:29:803894
+1- wendys.com.
+2- www.wendys.com.
+3- gn.symcd.com.
+4- ajax.googleapis.com.
+5- www.googletagmanager.com.
+6- ocsp.pki.goog.
+7- ds-aksb-a.akamaihd.net.
+8- www.google-analytics.com.
+9- stats.g.doubleclick.net.
+There were 9 unique DNS requests
+
+New request: taco.com. Accessed: 2018-03-2208:47:29:917473
+1- taco.com.
+2- www.taco.com.
+3- www.google-analytics.com.
+4- exingres.org.
+5- www.radiantsite.com.
+There were 5 unique DNS requests
+
+New request: duckduckgo.com. Accessed: 2018-03-2208:47:29:966456
+1- duckduckgo.com.
+2- ocsp.digicert.com.
+There were 2 unique DNS requests
+
+New request: subway.com. Accessed: 2018-03-2208:47:30:062293
+1- subway.com.
+2- www.subway.com.
+3- assets.adobedtm.com.
+4- fonts.googleapis.com.
+5- dpm.demdex.net.
+6- fonts.gstatic.com.
+7- www.youtube.com.
+8- fast.subway.demdex.net.
+9- cm.everesttech.net.
+10- subwayfranchiseeadvertising.d2.sc.omtrdc.net.
+11- ocsp.pki.goog.
+12- 8412126.fls.doubleclick.net.
+13- 1599532.fls.doubleclick.net.
+14- subway2016.tt.omtrdc.net.
+15- s.ytimg.com.
+16- adservice.google.com.
+17- cross.attribution.report.
+18- tags.w55c.net.
+19- ib.adnxs.com.
+20- cm.g.doubleclick.net.
+21- attribution.report.
+22- subway.cashstar.com.
+23- order.subway.com.
+24- p.subway.com.
+25- subculture.subway.com.
+26- www.facebook.com.
+27- twitter.com.
+28- www.instagram.com.
+29- partners.subway.com.
+30- contactsubscriptions.subway.com.
+31- info.evidon.com.
+There were 31 unique DNS requests
+
+New request: popeyes.com. Accessed: 2018-03-2208:47:38:157700
+1- popeyes.com.
+2- ocsp.usertrust.com.
+3- www.googletagmanager.com.
+4- www.google-analytics.com.
+5- connect.facebook.net.
+6- ocsp.digicert.com.
+7- stats.g.doubleclick.net.
+8- www.facebook.com.
+9- www.google.com.
+10- clients1.google.com.
+There were 10 unique DNS requests
+
+New request: debian. Accessed: 2018-03-2208:47:38:338398
+There were 0 unique DNS requests
+
+New request: kli.org. Accessed: 2018-03-2208:48:42:546178
+1- kli.org.
+2- www.kli.org.
+3- ocsp.int-x3.letsencrypt.org.
+4- maxcdn.bootstrapcdn.com.
+5- fonts.googleapis.com.
+6- ocsp.comodoca.com.
+7- fonts.gstatic.com.
+There were 7 unique DNS requests
+
+New request: memepool.com. Accessed: 2018-03-2208:48:42:647539
+1- memepool.com.
+2- 050009.voodoo.com.
+3- pagead2.googlesyndication.com.
+4- dp.g.doubleclick.net.
+5- ajax.googleapis.com.
+6- www.google.com.
+7- www.gstatic.com.
+8- survey.g.doubleclick.net.
+9- syndication.voodoo.com.
+10- cp.zoneedit.com.
+11- afs.googleusercontent.com.
+12- adservice.google.com.
+13- gp.symcd.com.
+14- www.networkadvertising.org.
+There were 14 unique DNS requests
+
+New request: reddit.com. Accessed: 2018-03-2208:48:42:812732
+1- reddit.com.
+2- www.reddit.com.
+3- www.redditstatic.com.
+4- b.thumbs.redditmedia.com.
+5- a.thumbs.redditmedia.com.
+6- ssl.google-analytics.com.
+7- www.google-analytics.com.
+8- www.redditmedia.com.
+9- www.googletagservices.com.
+10- c.amazon-adsystem.com.
+11- alb.reddit.com.
+12- z.moatads.com.
+13- securepubads.g.doubleclick.net.
+14- ocsp.digicert.com.
+15- www.googletagmanager.com.
+16- aax.amazon-adsystem.com.
+17- sb.scorecardresearch.com.
+18- secure.quantserve.com.
+19- www.googleadservices.com.
+20- ocsp.comodoca.com.
+21- s.amazon-adsystem.com.
+22- tpc.googlesyndication.com.
+23- pagead2.googlesyndication.com.
+24- ocsp.pki.goog.
+25- secure-assets.rubiconproject.com.
+26- us-u.openx.net.
+27- googleads.g.doubleclick.net.
+28- status.geotrust.com.
+29- eus.rubiconproject.com.
+30- ads.pubmatic.com.
+31- ib.adnxs.com.
+32- ad.doubleclick.net.
+33- www.google.com.
+34- px.moatads.com.
+35- token.rubiconproject.com.
+36- sync.mathtag.com.
+37- ad.turn.com.
+38- sync-tm.everesttech.net.
+39- match.adsrvr.org.
+40- cm.g.doubleclick.net.
+41- image6.pubmatic.com.
+42- s0.2mdn.net.
+43- pixel-us-east.rubiconproject.com.
+44- ocsp.trustwave.com.
+45- usync.aws.rubiconproject.com.
+46- pixel-a.sitescout.com.
+47- googleads4.g.doubleclick.net.
+48- pixel.rubiconproject.com.
+49- pixel.tapad.com.
+50- aa.agkn.com.
+51- id.rlcdn.com.
+52- c1.adform.net.
+53- geo-um.btrll.com.
+54- p.rfihub.com.
+55- pubmatic2waycm-atl.netmng.com.
+56- status.rapidssl.com.
+57- image2.pubmatic.com.
+58- simage2.pubmatic.com.
+59- geo-um.btrll.com.localdomain.
+60- ads.yahoo.com.
+61- ocsp.godaddy.com.
+62- gp.symcd.com.
+63- cookiex.ngd.yahoo.com.
+64- simage4.pubmatic.com.
+65- ade.googlesyndication.com.
+66- rules.quantcount.com.localdomain.
+67- rules.quantcount.com.
+There were 67 unique DNS requests
+
+New request: www.reddit.com. Accessed: 2018-03-2208:48:43:070299
+1- www.reddit.com.
+2- support.mozilla.org.
+3- ads.pubmatic.com.
+4- image6.pubmatic.com.
+5- sync.mathtag.com.
+6- idsync.rlcdn.com.
+7- pixel.quantserve.com.
+8- x.skimresources.com.
+9- pubmatic-match.dotomi.com.
+10- sync.1rx.io.
+11- match.basebanner.com.
+12- px.adhigh.net.
+13- image4.pubmatic.com.
+14- p.skimresources.com.
+15- simage4.pubmatic.com.
+There were 15 unique DNS requests

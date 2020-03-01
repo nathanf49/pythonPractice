@@ -1021,3 +1021,14 @@ def say(say_please=False):
 print(say())                 # Can you buy me a beer?
 print(say(say_please=True))  # Can you buy me a beer? Please! I am poor :(
 
+####################################################
+## 8. Plotting (PyLab)
+####################################################
+import pylab as plt #from modules (5)
+plt.figure('name') #select the figure you're working with
+plt.clf() #clears plot if previously used
+plt.subplot(211) #creates sunplots to show multiple data sets (number is row(2), column(2), which one is this using(1))
+plt.ylim(MIN,MAX) #sets range for y axis, same command for x, but with plt.xlim()
+plt.plot(Xdata, Ydata, 'line color/type', label = 'subplot title', linewidth = numofpixels)
+plt.legend(loc = 'upper left') #can set location of plot
+plt.title('title for whole graph')
