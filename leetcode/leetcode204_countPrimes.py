@@ -7,22 +7,18 @@ class Solution():
         """
         Counts the number of prime numbers less than a non negative number: n
         """
-        primeCount = 1 #counts 1
-        for i in range(1,n,2):
-            if self.isPrime(i):
-                primeCount += 1
-        return primeCount
+        if (n < 3):  # 2 is the first prime number
+            return 0
 
-    def isPrime(self, x: int) -> bool:
-        """
-        Checks if a number is prime
-        """
-        if x < 2:
-            return False
-        while i ** 2 < x:
-            if x % i == 0:
-                return False
-        return True
+        primelist = [1] * n  # make a list of all possible numbers, but remove 1 and current num
+        primelist[0] = 0 #0 and 1 are always not prime
+        primelist[1] = 0
+
+        for x in range(2, int(n ** 0.5) + 1):  # goes from 2 to the square root of n
+            if (primelist[x] == 1):  # skips if already set to 0
+                for y in range(x * x, n, x):  # sets all multiples of current position index up to n to 0
+                    primelist[y] = 0
+        return sum(primelist)
 
 
     """
