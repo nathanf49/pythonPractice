@@ -9,25 +9,29 @@ Otherwise, A will friend request B.
 Note that if A requests B, B does not necessarily request A.  Also, people will not friend request themselves.
 How many total friend requests are made?
 """
+
+
 def numFriendRequests(ages):
     friendRequestCount = 0
     for personA in ages:
-        ages.remove(personA) #Take personA out so they don't become friends with themselves
-        for personB in ages: #Go through the list again to compare to the rest of the people in it
-            if (personB <= ((.5 * personA)+7) or (personB > personA) or ((personB > 100) and (personA < 100))):
-                #conditions given by problem for not friends
-                friendRequestCount = friendRequestCount #do nothing
+        ages.remove(personA)  # Take personA out so they don't become friends with themselves
+        for personB in ages:  # Go through the list again to compare to the rest of the people in it
+            if personB <= ((.5 * personA) + 7) or (personB > personA) or ((personB > 100) and (personA < 100)):
+                # conditions given by problem for not friends
+                friendRequestCount = friendRequestCount  # do nothing
             else:
-                friendRequestCount += 1 #friend request sent
-        ages.insert(0,personA) #add person back into the list 
-    return(friendRequestCount)
-            
+                friendRequestCount += 1  # friend request sent
+        ages.insert(0, personA)  # add person back into the list
+    return friendRequestCount
+
+
 import random
+
 ages = []
-ageLength = random.randint(1,20000)
-for x in range(ageLength+1):
-    ages.append(random.randint(1,120))
-#ages = [20,30,100,110,120]
+ageLength = random.randint(1, 20000)
+for x in range(ageLength + 1):
+    ages.append(random.randint(1, 120))
+# ages = [20,30,100,110,120]
 print(numFriendRequests(ages))
 """
 Example 1:
