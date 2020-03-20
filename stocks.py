@@ -31,7 +31,7 @@ class person(object):
                 # update current price and number
                 averagePurchasePrice = ((self.portfolio[stockToBuy].purchasePrice * self.portfolio[
                     stockToBuy].number) + (stockToBuy.currentPrice * number)) / (
-                                                   self.portfolio[stockToBuy].number + number)
+                                               self.portfolio[stockToBuy].number + number)
                 self.portfolio[stockToBuy].purchasePrice = averagePurchasePrice
                 self.portfolio[stockToBuy].currentValue = stockToBuy.currentPrice
                 self.portfolio[stockToBuy].number += number
@@ -54,7 +54,8 @@ class money(object):
             self.amount = inputAmount.amount
         else:  # rejects any non numerical inputs
             raise TypeError('Prices must be in integer or float format.')
-        self.basePrice = inputAmount  # sets base price for discounts to be set
+
+        self.basePrice = self.amount  # sets base price for discounts to be set
 
     def discount(self, percent):  # allows stock to be discounted, probably won't really use
         if type(percent) is not int and type(percent) is not float:
@@ -65,8 +66,8 @@ class money(object):
     def discountReset(self):  # resets amount
         self.amount = self.basePrice
 
-    def newPrice(self,
-                 newBasePrice):  # sets new base price and amount for money, stocks have their own price update method
+    def newPrice(self, newBasePrice):  # sets new base price and amount for money, stocks have their own price update
+        # method
         if type(newBasePrice) is int or type(newBasePrice) is float:
             self.basePrice = newBasePrice
             self.discountReset()  # resets amount
@@ -81,7 +82,7 @@ class money(object):
 
     def __sub__(self, other):
         if type(other) is money:
-            # if other.amount > self.amount:
+            # if other.amount > self.amount:                              #if loans are implemented, use this
             #    raise ValueError("You don't have enough money for this")
             return money(self.amount - other.amount)
         elif type(other) is float or type(other) is int:
@@ -143,7 +144,8 @@ class money(object):
 
 class stock(object):
     def __init__(self, name, currentPrice):
-        assert type(name) is str
+        if type(name) is not str:
+            raise TypeError("Stock name must be a string")
         self.name = name
         if type(currentPrice) is not money:
             currentPrice = money(currentPrice)
@@ -170,13 +172,20 @@ class stockInfoHolder(object):  # saves the original purchase price, allows the 
         if type(purchasePrice) is not money:
             purchasePrice = money(purchasePrice)
         self.purchasePrice = purchasePrice
+        if self.purchasePrice < 0:
+            raise ValueError("You cannot purchase a stock for a negative amount of money")
 
         if type(purchasePrice) is not money:
             currentValue = money(currentValue)
         self.currentValue = currentValue
+        if self.currentValue < 0:
+            raise ValueError("A stock cannot be worth a negative amount of money")
+
         if type(number) is not int:
             raise TypeError("You must buy an integer number of stocks")
         self.number = number
+        if self.number < 0:
+            raise ValueError("You cannot own a negative number of stocks")
 
     def __str__(self):
         return 'Purchase: ' + str(self.purchasePrice) + " Value: " + str(self.currentValue) + " Shares: " + str(
@@ -196,18 +205,16 @@ if preset is True:
 
     # stock testing - shouldn't work
     # stringStock = stock('TACO','5') # string for value - Throws proper error
-    wrongNameStock = stock(5, 123)
+    # wrongNameStock = stock(5, 123)  # int for name - Throws proper error
 
     # stockInfoHolder testing - should work
     brandiStockInfo = {Tesla: stockInfoHolder(2.50, Tesla.currentPrice)}
 
     # stockInfoHolder testing - shouldn't work
-    brookeStockInfo = {Fake: stockInfoHolder(1.00, 5, 9)}  # holds info for a fake stock
-    brooke = person(0, brookeStockInfo)
-    pooStockInfo = {Tesla: stockInfoHolder(5, 5, -4)}  # has a negative number of shares
-    poo = person(10, pooStockInfo)
-    tonyStockInfo = {Tesla: stockInfoHolder(5, -4)}  # has a negative currentValue
-    tony = person(5000, tonyStockInfo)
+    # brookeStockInfo = {'Fake': stockInfoHolder(1.00, 5, 9)}  # info for a fake stock - throws error with Fake as stock
+    # brooke = person(0, brookeStockInfo)  # throws error with Fake as string
+    poo = person(10, {Tesla: stockInfoHolder(5, 5, -4)})  # has a negative number of shares
+    tony = person(5000, {Tesla: stockInfoHolder(5, -1)})  # has a negative currentValue
 
     # person testing should work
     nathan = person()  # blank person
@@ -220,6 +227,7 @@ if preset is True:
 
     Tesla.updatePrice(50)
     nathan.buy(Tesla, 4)
+
 
     # implement price changes updating to calculate profit for individuals and keep working down method list
 
