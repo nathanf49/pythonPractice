@@ -21,8 +21,11 @@ class person(object):
                 raise TypeError("Any stocks in your portfolio dictionary must have an integer amount")
         self.portfolio = portfolio
 
-    def buy(self, stockToBuy, number=1):  # purchases a stock, saves the currentValue and number of stocks purchased.
-        # Default is 1
+    def buy(self, stockToBuy, number=1):
+        """
+        Purchases a stock, saves the currentValue and number of stocks purchased.
+        Default is 1
+        """
         if type(stockToBuy) is not stock:  # checks inputs
             raise TypeError('Stock to buy must be a stock')
         if type(number) is not int:
@@ -43,12 +46,17 @@ class person(object):
             raise ValueError("You don't have enough money for this. Please consider selling stocks or getting a loan")
 
     # test below methods
-    def sell(self, stockToSell, number=1):  # sells a stock, increases personalMoney based on number of stocks sold.
-        # Default is 1
+    def sell(self, stockToSell, number=None):
+        """
+        sells a stock, increases personalMoney based on number of stocks sold.
+        Default is all
+        """
         if type(stockToSell) is not stock:  # checks inputs
             raise TypeError('Stock to sell must be a stock')
         if stockToSell not in self.portfolio:
             raise ValueError(str(stockToSell) + ' not owned.')
+        if number is None:
+            number = self.portfolio[stockToSell].number
         if type(number) is not int:
             raise TypeError('You must buy an integer number of stocks')
         if number > self.portfolio[stockToSell].number:
@@ -61,31 +69,19 @@ class person(object):
             income) + ". \nCurrent Money: " + str(self.personalMoney))
 
     def potentialProfit(self, stockToSell=None, number=None):  # returns income - startingPrice paid if a stock is sold.
-        # Default is all shares
-        if type(stockToSell) is not stock and stockToSell is not None:  # checks inputs
-            raise TypeError('Stock to sell must be a stock')
-        if stockToSell not in self.portfolio:
-            raise ValueError(str(stockToSell) + ' not owned.')
-        if number is None:  # sets default to maximum number of shares that can be sold, none wouldn't be valid,
-            # so it sets to default
-            number = self.portfolio[stockToSell].number
-        if type(number) is not int:
-            raise TypeError('You must buy an integer number of stocks')
-        if number > self.portfolio[stockToSell].number:
-            raise ValueError("You don't own that many shares to sell")
-
-        self.updateStockPrice(stockToSell)  # updates stock price
-        if stockToSell is None:  # if no inputs, return potential profit for the entire portfolio
+        """
+        If there is an input for the stock, only return potential profit for that stock and the number of shares
+        designated to be sold. If there is no input for the number, return the profit of all shares of the stock.
+        If there is no input for either, return the potential profit for the entire portfolio
+        """
+        if stockToSell is None and number is None:
             profit = money(0)
             for current in self.portfolio:  # goes through each stock in the portfolio
+                self.updateStockPrice(current)  # updates stock price
                 profit += (self.portfolio[current].currentValue - self.portfolio[current].purchasePrice) * \
                           self.portfolio[current].number
             return profit
-        # if there is an input for the stock, only return potential profit for that stock and the number of shares
-        # designated to be sold. If there is no input for the number, return the profit of all shares of the stock
-        return (self.portfolio[stockToSell].currentValue - self.portfolio[stockToSell].purchasePrice) * number
 
-    def potentialIncome(self, stockToSell, number=None):  # returns income is a stock is sold. Default is all shares
         if type(stockToSell) is not stock:  # checks inputs
             raise TypeError('Stock to sell must be a stock')
         if stockToSell not in self.portfolio:
@@ -99,25 +95,56 @@ class person(object):
             raise ValueError("You don't own that many shares to sell")
 
         self.updateStockPrice(stockToSell)  # updates stock price
-        if stockToSell is None:  # if no inputs, return potential profit for the entire portfolio
-            income = money(0)
+        return (self.portfolio[stockToSell].currentValue - self.portfolio[stockToSell].purchasePrice) * number
+
+    def potentialIncome(self, stockToSell=None, number=None):
+        """
+        Returns income is a stock is sold. Default is all
+        If there is an input for the stock, only return potential profit for that stock and the number of shares
+        designated to be sold. If there is no input for the number, return the profit of all shares of the stock.
+        If there is no input for either, return the potential profit for the entire portfolio
+        """
+        if stockToSell is None and number is None:  # if no inputs, return potential profit for the entire portfolio
+            profit = money(0)
             for current in self.portfolio:  # goes through each stock in the portfolio
-                income += self.portfolio[current].currentValue * self.portfolio[current].number
-            return income
-        # if there is an input for the stock, only return potential profit for that stock and the number of shares
-        # designated to be sold. If there is no input for the number, return the profit of all shares of the stock
+                self.updateStockPrice(current)
+                profit += self.portfolio[current].currentValue * self.portfolio[current].number
+            return profit
+
+        if type(stockToSell) is not stock:  # checks inputs
+            raise TypeError('Stock to sell must be a stock')
+        if stockToSell not in self.portfolio:
+            raise ValueError(str(stockToSell) + ' not owned.')
+        if number is None:  # sets default to maximum number of shares that can be sold, none wouldn't be valid,
+            # so it sets to default
+            number = self.portfolio[stockToSell].number
+        if type(number) is not int:
+            raise TypeError('You must buy an integer number of stocks')
+        if number > self.portfolio[stockToSell].number:
+            raise ValueError("You don't own that many shares to sell")
+
+        self.updateStockPrice(stockToSell)  # updates stock price
         return self.portfolio[stockToSell].currentValue * number
 
-    def updateStockPrice(self, currentStock):  # updates currentValue of stock. Should probably be called most of the
-        # time anything in this class is called. Stock prices should always be accurate when selling, or checking income
-        # does not need to run when buying because the stock isn't there to update
+    def netWorth(self):
+        """
+        Returns value of a person's portfolio and money.
+        """
+        return self.personalMoney + self.potentialIncome()
+
+    def updateStockPrice(self, currentStock):
+        """
+        Updates currentValue of stock. Should probably be called most of the time anything in this class is called
+        except buying. Stock prices should always be accurate when selling, or checking income, but does not need to run
+        when buying because the stock isn't there to update
+        """
         if type(currentStock) is not stock:
             raise TypeError("Please input a stock")
         if currentStock not in self.portfolio:
             raise ValueError(str(currentStock) + " is not in this individual's portfolio")
         self.portfolio[currentStock].currentValueSetter(currentStock.currentPrice)
 
-    def __str__(self):
+    def __str__(self):  # prints both the person's money and their stock portfolio
         return 'Money: ' + str(self.personalMoney) + '\nportfolio: ' + str(self.portfolio)
 
 
@@ -327,26 +354,30 @@ if preset is True:
     brandi.buy(Tesla, 23)
 
     # potentialProfit testing
-    brandi.potentialProfit()
-    Tesla.updatePrice(50)
-    brandi.potentialProfit(Tesla)
-    nathan.potentialProfit()
-    nathan.buy(Tesla, 4)
-    nathan.potentialProfit()
-    Tesla.updatePrice(100)
-    nathan.potentialProfit()
+    # print("Tesla Potential Profit for Brandi: " + str(brandi.potentialProfit(Tesla))) # has potential profit since
+    # currentValue is higher than purchasePrice
+    # Tesla.updatePrice(50)
+    # print("Updated Tesla Value, new Potential Profit for Brandi: " + str(brandi.potentialProfit(Tesla))) # increases
+    # potential profit since currentValue has gone up
+    # print("Potential Profit for Nathan: " + str(nathan.potentialProfit()))  # 0 since the currentValue is the
+    # same as purchasePrice
+    # nathan.buy(Tesla, 4)
+    # print("Potential Profit for Nathan after buying Tesla: " + str(nathan.potentialProfit()))  # stays at 0 since the
+    # currentValue is the same as purchasePrice
+    # Tesla.updatePrice(100)
+    # print("Potential Profit for Nathan after Tesla price update: " + str(nathan.potentialProfit()))  # potential
+    # profit increases now since the currentValue of Tesla has now gone up
 
     # income testing
-    nathan.potentialIncome()
-    nathan.buy(Google, 10)
-    nathan.potentialIncome()
-    nathan.buy(Amazon, 3)
-    nathan.potentialIncome()
-    brandi.potentialIncome()
-    Amazon.updatePrice(100)
-    brandi.potentialIncome()
-
+    # print("Potential Income for Nathan: " + str(nathan.potentialIncome()))
+    # nathan.buy(Google, 10)
+    # print("Potential Income for Nathan after buying Google: " + str(nathan.potentialIncome(Google)))
+    # nathan.buy(Amazon, 3)
+    # print("Potential Income for Nathan after buying Amazon: " + str(nathan.potentialIncome()))
+    # print("Brandi Potential Income: " + str(brandi.potentialIncome()))
+    # Amazon.updatePrice(100)
+    # print("Brandi Potential Income after lowering Amazon Price $20: " + str(brandi.potentialIncome()))
 
     # sell testing
 
-    # implement price changes updating to calculate profit for individuals and keep working down method list
+    # net worth testing
