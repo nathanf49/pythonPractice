@@ -45,7 +45,6 @@ class person(object):
         else:
             raise ValueError("You don't have enough money for this. Please consider selling stocks or getting a loan")
 
-    # test below methods
     def sell(self, stockToSell, number=None):
         """
         sells a stock, increases personalMoney based on number of stocks sold.
@@ -65,8 +64,46 @@ class person(object):
         self.updateStockPrice(stockToSell)  # updates stocks price
         income = self.potentialIncome(stockToSell, number)
         self.personalMoney += income
+        self.portfolio[stockToSell].number -= number  # removes shares from portfolio
+        if self.portfolio[stockToSell].number == 0:  # if there are no shares left, removes the stock from portfolio
+            del self.portfolio[stockToSell]
         print("Sold " + str(number) + " shares of " + str(stockToSell) + " for " + str(
             income) + ". \nCurrent Money: " + str(self.personalMoney))
+
+    def sellTo(self, otherPerson, stockToSell, number=None):  # test this
+        """
+        Sells a stock to another person instead just selling.
+        Default is 1 share
+        """
+        if type(otherPerson) is not person:
+            raise TypeError("Please enter a person to sell to")
+        if type(stockToSell) is not stock:
+            raise TypeError("Please enter a stock to buy")
+        if number is None:
+            number = 1
+        if type(number) is not int:
+            raise TypeError("Please enter an integer number of stocks to sell")
+        if otherPerson.personalMoney >= self.potentialIncome(stockToSell, number):  # checks that other person can
+            # afford to buy the stocks
+            self.sell(stockToSell, number)  # you sell
+            otherPerson.buy(stockToSell, number)  # they buy
+
+    def buyFrom(self, otherPerson, stockToBuy, number=None):  # test this
+        """
+        Buys stocks from another person instead of just buying.
+        Default is 1 share
+        """
+        if type(otherPerson) is not person:
+            raise TypeError("Please enter a person to sell to")
+        if type(stockToBuy) is not stock:
+            raise TypeError("Please enter a stock to buy")
+        if number is None:
+            number = 1
+        if type(number) is not int:
+            raise TypeError("Please enter an integer number of stocks to sell")
+        if self.personalMoney >= otherPerson.potentialIncome(stockToBuy, number):  # ensures you can afford the stocks
+            otherPerson.sell(stockToBuy, number)  # they sell
+            self.buy(stockToBuy, number)  # you buy
 
     def potentialProfit(self, stockToSell=None, number=None):  # returns income - startingPrice paid if a stock is sold.
         """
@@ -130,7 +167,7 @@ class person(object):
         """
         Returns value of a person's portfolio and money.
         """
-        return self.personalMoney + self.potentialIncome()
+        return self.personalMoney + self.potentialIncome()  # stock prices are updates in potentialIncome
 
     def updateStockPrice(self, currentStock):
         """
@@ -184,12 +221,12 @@ class money(object):
 
     def __sub__(self, other):
         if type(other) is money:
-            # if other.amount > self.amount:                              #if loans are implemented, use this
-            #    raise ValueError("You don't have enough money for this")
+            if other.amount > self.amount:  # if loans are implemented, use this
+                raise ValueError("You don't have enough money for this")
             return money(self.amount - other.amount)
         elif type(other) is float or type(other) is int:
-            # if other > self.amount:
-            #   raise ValueError("You don't have enough money for this")
+            if other > self.amount:
+                raise ValueError("You don't have enough money for this")
             return money(self.amount - other)
 
     def __mul__(self, other):
@@ -216,6 +253,18 @@ class money(object):
 
         return False  # condition if anything fails
 
+    def __ge__(self, other):
+        if type(other) is money:
+            if self.amount >= other.amount:
+                return True
+        elif type(other) is int or type(other) is float:
+            if self.amount >= other:
+                return True
+        else:
+            raise TypeError('Comparisons can only be made between money and numbers')
+
+        return False  # condition if anything fails
+
     def __lt__(self, other):
         if type(other) is money:
             if self.amount < other.amount:
@@ -228,12 +277,36 @@ class money(object):
 
         return False  # condition if anything fails
 
+    def __le__(self, other):
+        if type(other) is money:
+            if self.amount <= other.amount:
+                return True
+        elif type(other) is int or type(other) is float:
+            if self.amount <= other:
+                return True
+        else:
+            raise TypeError('Comparisons can only be made between money and numbers')
+
+        return False  # condition if anything fails
+
     def __eq__(self, other):
         if type(other) is money:
             if self.amount == other.amount:
                 return True
         elif type(other) is int or type(other) is float:
             if self.amount == other:
+                return True
+        else:
+            raise TypeError('Comparisons can only be made between money and numbers')
+
+        return False
+
+    def __ne__(self, other):
+        if type(other) is money:
+            if self.amount != other.amount:
+                return True
+        elif type(other) is int or type(other) is float:
+            if self.amount != other:
                 return True
         else:
             raise TypeError('Comparisons can only be made between money and numbers')
@@ -378,6 +451,16 @@ if preset is True:
     # Amazon.updatePrice(100)
     # print("Brandi Potential Income after lowering Amazon Price $20: " + str(brandi.potentialIncome()))
 
-    # sell testing
-
     # net worth testing
+    # print("Brandi's net worth: " + str(brandi.netWorth()))
+    # Tesla.updatePrice(50)
+    # Google.updatePrice(500)
+    # print("Brandi's net worth after stock price increase: " + str(brandi.netWorth()))
+    # brandi.sell(Tesla)
+    # brandi.sell(Google)
+    # print("Brandi's net worth after selling stock: " + str(brandi.netWorth()))
+
+    # sellTo testing
+    nathan.sellTo(brandi,Tesla) # default arguments
+    brandi.buy()
+    # buyFrom testing
