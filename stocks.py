@@ -1,5 +1,9 @@
 class person(object):
-    def __init__(self, personalMoney=None, portfolio=None):
+    def __init__(self, name, personalMoney=None, portfolio=None):
+        if type(name) is not str:
+            raise TypeError("Name must be entered as a string")
+        self.name = name
+
         if personalMoney is None:
             personalMoney = 0
         if type(personalMoney) is not money:  # attempts to convert if proper format is not used
@@ -9,16 +13,16 @@ class person(object):
         if portfolio is None:
             portfolio = {}
         if type(portfolio) is not dict:  # checks that all portfolio is a dict with stocks that have an integer amount
-            raise TypeError("portfolio must be input as a dictionary")
+            raise TypeError("Portfolio must be entered as a dictionary")
         for current in portfolio:  # checks that portfolio contains stocks and that person owns integer number of stocks
             if type(current) is not stock:
-                raise TypeError("Any stocks in your portfolio dictionary must be a type of stock")
+                raise TypeError("Any stocks in " + str(self.name) + "'s portfolio dictionary must be a type of stock")
             if type(portfolio[current].currentValue) is not money:
                 portfolio[current].currentValue = money(portfolio[current].currentValue)
             if type(portfolio[current].purchasePrice):
                 portfolio[current].purchasePrice = money(portfolio[current].purchasePrice)
             if type(portfolio[current].number) is not int:
-                raise TypeError("Any stocks in your portfolio dictionary must have an integer amount")
+                raise TypeError("Any stocks in " + str(self.name) + "'s portfolio dictionary must have an integer amount")
         self.portfolio = portfolio
 
     def buy(self, stockToBuy, number=1):
@@ -29,21 +33,21 @@ class person(object):
         if type(stockToBuy) is not stock:  # checks inputs
             raise TypeError('Stock to buy must be a stock')
         if type(number) is not int:
-            raise TypeError('You must buy an integer number of stocks')
-        if self.personalMoney > stockToBuy.currentPrice * number:  # checks that person has enough money
-            self.personalMoney -= stockToBuy.currentPrice * number
+            raise TypeError(str(self.name) + ' must buy an integer number of stocks')
+        if self.personalMoney > stockToBuy.value * number:  # checks that person has enough money
+            self.personalMoney -= stockToBuy.value * number
             if stockToBuy in self.portfolio:  # if the stock is already owned, just average the purchase price/share,
                 # update current price and number
                 averagePurchasePrice = ((self.portfolio[stockToBuy].purchasePrice * self.portfolio[
-                    stockToBuy].number) + (stockToBuy.currentPrice * number)) / (
+                    stockToBuy].number) + (stockToBuy.value * number)) / (
                                                self.portfolio[stockToBuy].number + number)
                 self.portfolio[stockToBuy].purchasePriceSetter(averagePurchasePrice)
-                self.portfolio[stockToBuy].currentValueSetter(stockToBuy.currentPrice)
+                self.portfolio[stockToBuy].currentValueSetter(stockToBuy.value)
                 self.portfolio[stockToBuy].numberSetter(self.portfolio[stockToBuy].number + number)
             else:  # otherwise just create a stockInfoHolder for it
-                self.portfolio[stockToBuy] = stockInfoHolder(stockToBuy.currentPrice, stockToBuy.currentPrice, number)
+                self.portfolio[stockToBuy] = stockInfoHolder(stockToBuy.value, stockToBuy.value, number)
         else:
-            raise ValueError("You don't have enough money for this. Please consider selling stocks or getting a loan")
+            raise ValueError(str(self.name) + " doesn't have enough money for this. Please consider selling stocks or getting a loan")
 
     def sell(self, stockToSell, number=None):
         """
@@ -57,9 +61,9 @@ class person(object):
         if number is None:
             number = self.portfolio[stockToSell].number
         if type(number) is not int:
-            raise TypeError('You must buy an integer number of stocks')
+            raise TypeError(str(self.name) + ' must buy an integer number of stocks')
         if number > self.portfolio[stockToSell].number:
-            raise ValueError("You don't own that many shares to sell")
+            raise ValueError(str(self.name) + " doesn't own that many shares to sell")
         # if stockToSell is a stock that the person owns, and number is an integer number of stocks the person owns
         self.updateStockPrice(stockToSell)  # updates stocks price
         income = self.potentialIncome(stockToSell, number)
@@ -87,6 +91,8 @@ class person(object):
             # afford to buy the stocks
             self.sell(stockToSell, number)  # you sell
             otherPerson.buy(stockToSell, number)  # they buy
+        else:
+            raise ValueError(str(otherPerson.name) + " cannot afford this transaction")
 
     def buyFrom(self, otherPerson, stockToBuy, number=None):  # test this
         """
@@ -104,6 +110,8 @@ class person(object):
         if self.personalMoney >= otherPerson.potentialIncome(stockToBuy, number):  # ensures you can afford the stocks
             otherPerson.sell(stockToBuy, number)  # they sell
             self.buy(stockToBuy, number)  # you buy
+        else:
+            raise ValueError(str(self.name) + " cannot afford this transaction")
 
     def potentialProfit(self, stockToSell=None, number=None):  # returns income - startingPrice paid if a stock is sold.
         """
@@ -127,9 +135,9 @@ class person(object):
             # so it sets to default
             number = self.portfolio[stockToSell].number
         if type(number) is not int:
-            raise TypeError('You must buy an integer number of stocks')
+            raise TypeError(str(self.name) + ' must buy an integer number of stocks')
         if number > self.portfolio[stockToSell].number:
-            raise ValueError("You don't own that many shares to sell")
+            raise ValueError(str(self.name) + " doesn't own that many shares to sell")
 
         self.updateStockPrice(stockToSell)  # updates stock price
         return (self.portfolio[stockToSell].currentValue - self.portfolio[stockToSell].purchasePrice) * number
@@ -156,9 +164,9 @@ class person(object):
             # so it sets to default
             number = self.portfolio[stockToSell].number
         if type(number) is not int:
-            raise TypeError('You must buy an integer number of stocks')
+            raise TypeError(str(self.name) + ' must buy an integer number of stocks')
         if number > self.portfolio[stockToSell].number:
-            raise ValueError("You don't own that many shares to sell")
+            raise ValueError(str(self.name) + " doesn't own that many shares to sell")
 
         self.updateStockPrice(stockToSell)  # updates stock price
         return self.portfolio[stockToSell].currentValue * number
@@ -179,7 +187,7 @@ class person(object):
             raise TypeError("Please input a stock")
         if currentStock not in self.portfolio:
             raise ValueError(str(currentStock) + " is not in this individual's portfolio")
-        self.portfolio[currentStock].currentValueSetter(currentStock.currentPrice)
+        self.portfolio[currentStock].currentValueSetter(currentStock.value)
 
     def __str__(self):  # prints both the person's money and their stock portfolio
         return 'Money: ' + str(self.personalMoney) + '\nportfolio: ' + str(self.portfolio)
@@ -318,13 +326,13 @@ class money(object):
 
 
 class stock(object):
-    def __init__(self, name, currentPrice):
+    def __init__(self, name, value):
         if type(name) is not str:
             raise TypeError("Stock name must be a string")
         self.name = name
-        if type(currentPrice) is not money:
-            currentPrice = money(currentPrice)
-        self.currentPrice = currentPrice
+        if type(value) is not money:
+            value = money(value)
+        self.value = value
 
     def nameSetter(self, newName):
         assert type(newName) is str
@@ -335,10 +343,10 @@ class stock(object):
             newPrice = float(input('Input new price for ' + str(self.name) + ': '))
         if type(newPrice) is not money:  # converts to float first to get rid of string from input
             newPrice = money(newPrice)
-        self.currentPrice = newPrice
+        self.value = newPrice
 
     def __str__(self):
-        return str(self.name) + ': Now worth: ' + str(self.currentPrice)
+        return str(self.name) + ': Now worth: ' + str(self.value)
 
 
 class stockInfoHolder(object):  # saves the original purchase price, allows the value to change, and holds the number
@@ -388,8 +396,21 @@ class stockInfoHolder(object):  # saves the original purchase price, allows the 
             self.number)
 
 
-class loan(object):  # implement to avoid negative money
-    pass
+class loan(object):  # implement to obtain money if necessary
+    def __init__(self, amount, personTakingLoanOut, personTakingLoanFrom,percentage=None):
+        self.amount = money(amount) #ensures loan is for money
+        if type(personTakingLoanOut) is not person: #ensures person is taking out this loan
+            raise TypeError('Loan must be assigned to a person')
+        self.personTakingLoanOut = personTakingLoanOut
+        if type(personTakingLoanFrom) is not person: #ensures loan is coming from a person
+            raise TypeError('Loan must be taken out from a person')
+        self.personTakingLoanFrom = personTakingLoanFrom # ensures person has enough money to give out a loan before
+        # touching anyone's money
+        if self.personTakingLoanFrom.personalMoney < self.amount:
+            raise ValueError("This person doesn't have enough money to give out a loan that big")
+        self.personTakingLoanFrom.personalMoney -= self.amount # take the money from the person giving the loan out
+        self.personTakingLoanOut.personalMoney += self.amount # give the money to the person taking the loan out
+        self.personTakingLoanOut.
 
 
 preset = True
@@ -404,9 +425,9 @@ if preset is True:
     # wrongNameStock = stock(5, 123)  # int for name - Throws proper error
 
     # stockInfoHolder testing - should work
-    brandiStockInfo = {Tesla: stockInfoHolder(2.50, Tesla.currentPrice),
-                       Amazon: stockInfoHolder(10, Amazon.currentPrice),
-                       Google: stockInfoHolder(5, Google.currentPrice, 50)}
+    brandiStockInfo = {Tesla: stockInfoHolder(2.50, Tesla.value),
+                       Amazon: stockInfoHolder(10, Amazon.value),
+                       Google: stockInfoHolder(5, Google.value, 50)}
 
     # stockInfoHolder testing - shouldn't work
     # brookeStockInfo = {'Fake': stockInfoHolder(1.00, 5, 9)}  # info for a fake stock - throws error with Fake as stock
@@ -415,9 +436,9 @@ if preset is True:
     # tony = person(5000, {Tesla: stockInfoHolder(5, -1)})  # has a negative currentValue - throws error
 
     # person testing should work
-    test = person()  # blank person
-    brandi = person(2564.56, brandiStockInfo)  # float money and info from above
-    nathan = person(5000)
+    test = person('test')  # blank person
+    brandi = person('Brandi', 2564.56, brandiStockInfo)  # float money and info from above
+    nathan = person('Nathan', 5000)
 
     # buy testing
     # test.buy(Tesla) # test doesn't have enough money - throws proper error
@@ -461,6 +482,9 @@ if preset is True:
     # print("Brandi's net worth after selling stock: " + str(brandi.netWorth()))
 
     # sellTo testing
-    nathan.sellTo(brandi,Tesla) # default arguments
-    brandi.buy()
+    # nathan.sellTo(brandi,Tesla) # default arguments
+
     # buyFrom testing
+    # nathan.buyFrom(brandi, Tesla) # default arguments
+
+    #loan testing
