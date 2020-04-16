@@ -7,13 +7,14 @@ def unique(string):
     if len(string) > 128:
         return False
 
-    char_set = [False for _ in range(128)]
+    # violates second optional requirement
+    char_set = [False for _ in range(128)] #creates a list that defaults to false for each possible char in ASCII 128 to show if it has been found or not
     for char in string:
-        val = ord(char)
-        if char_set[val]:
+        val = ord(char) # finds where current char is in ascii 128 positioning
+        if char_set[val]: #checks if that char has already been found
             # Char already found in string
             return False
-        char_set[val] = True
+        char_set[val] = True # sets to found
 
     return True
 
