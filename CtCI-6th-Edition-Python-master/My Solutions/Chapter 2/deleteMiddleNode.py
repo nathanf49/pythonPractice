@@ -29,4 +29,4 @@ deleteMiddleNode(ll)
 print(ll)
 deleteMiddleNode(ll)
 print(ll)
-# deleteMiddleNode(ll) # throws value error, 2 elements 
+# deleteMiddleNode(ll) # throws value error, 2 elements
