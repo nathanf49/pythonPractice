@@ -16,6 +16,8 @@ def loopDetection(linkedList):
     return currentNode
 
 ll = LinkedList()
-ll.generate(10,0,9)
-ll.tail.next = ll.head
-loopNode = loopDetection(ll)
+ll.generate(10,0,9) # generates 10 values between 0 and 9
+ll.tail.next = ll.head # loops the end of the list back around to the head
+loopNode = loopDetection(ll) # should return head node
+print(ll)
+print(loopNode)
