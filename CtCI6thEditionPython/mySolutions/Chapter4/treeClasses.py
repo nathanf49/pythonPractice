@@ -6,6 +6,7 @@ class node:
 
         creates a node that holds value and has children that are nodes holding value1 and value2
     """
+
     def __init__(self, value, children=None):
         self.value = value  # assigns data to node of tree
         self.children = []  # list of children if there are any
@@ -27,8 +28,15 @@ class node:
         return out
 
     def addChild(self, child):
-        if type(child) is node:
+        if type(child) is node:  # adds node since tree can have any number of children
             self.children.append(child)
+        elif type(child) is binaryNode or binarySearchNode:  # binary nodes can only have 2 children
+            if len(self.children) < 2:
+                self.children.append(child)
+            else:
+                raise Exception("Binary nodes can only have 2 children")
+        else:
+            raise TypeError('Please put your value in a node to add it as a child')
 
     def __str__(self):
         return str(self.value)
@@ -38,6 +46,7 @@ class binaryNode(node):
     """
     Similar to a regular node, but has a maximum of 2 children
     """
+
     def __init__(self, value, child0=None, child1=None):
         node.__init__(self, value)
         self.children = []  # list of children if there are any
@@ -53,37 +62,44 @@ class binaryNode(node):
             else:
                 raise TypeError("Child1 must be a binary node")  # Throws error for non binary node
 
-    def addChild(self, child):
-        if type(child) is binaryNode or binarySearchNode:
-            if len(self.children) < 2:
-                self.children.append(child)
 
-
-class binarySearchNode(binaryNode):  # TODO Ensure that all left child values are greater than all values above them
+class binarySearchNode(binaryNode):
     """
     Similar to binaryNode, but all left values must be less than or equal to all parents and all right values must be
     greater than all parents
     """
+
     def __init__(self, value, child0=None, child1=None):
-        if type(value) is not int or float:
+        if type(value) is not (int or float):
             raise Exception("Please only use numerical values in Binary Search Trees to assist with sorting")
-        if child0 > value:
-            raise ValueError("Left child must be smaller than or equal to parent value")
-        if child1 <= value:
-            raise ValueError("Right child must be larger than parent value")
+        if child0 is not None:  # makes sure children satisfy definition of binary search tree
+            if child0 > value:
+                raise ValueError("Left child must be smaller than or equal to parent value")
+        if child1 is not None:  # makes sure children satisfy definition of binary search tree
+            if child1 <= value:
+                raise ValueError("Right child must be larger than parent value")
         binaryNode.__init__(self, value, child0=None, child1=None)
         self.parents = []
         self.children.sort()  # sorts child values so smaller value is on the left
         for child in self.children:
-            if self.value not in child.parents:
+            child.parents = self.parents
+            if self.value not in child.parents:  # makes sure children have parents recorded
                 child.parents.append(self.value)
 
-    def addChild(self, child): #TODO add left and add right might make this easier
+    def addChild(self, child):
         if len(self.children) == 1:
-            if not (child <= self.value and self.children[0] > self.value) or (child > self.value and self.children[0] < child):
+            if not (child.value <= self.value and child.value < self.children[0].value and child.value <= min(self.parents)) or (child.value > self.value and self.children[0].value < child.value and child.value > max(self.parents)):
+                # Ensures that child is less than or equal to all parent values if it will be on the left and greater
+                # than all parent values to the right
                 raise ValueError("One child must be bigger than all parent values and one must be smaller or equal to")
-        binaryNode.addChild(self, child)
-        self.children.sort()  # re-sort values after a new one is added
+        node.addChild(self, child)
+        self.children[-1].parents = self.parents  # saves own parents as parents of new child
+        if self.value not in self.children[-1].parents:  # adds own value to child's parent values #FIXME root adds itself to parents
+            self.children[-1].parents.append(self.value)
+        if len(self.children) == 2:  # re-sort values after a new one is added
+            if self.children[0].value > self.children[1].value: # swaps children if smaller child isn't on the left
+                self.children[0], self.children[1] = self.children[1], self.children[0]
+
 
     def inOrderTraversal(self):  # prints values in order from smallest to largest
         # wouldn't be in order on any other tree
@@ -92,3 +108,8 @@ class binarySearchNode(binaryNode):  # TODO Ensure that all left child values ar
         print(self.value)
         if len(self.children) == 2:
             self.children[1].inOrderTraversal(self)
+
+
+x = binarySearchNode(7)
+y = binarySearchNode(8)
+z = binarySearchNode(5)
