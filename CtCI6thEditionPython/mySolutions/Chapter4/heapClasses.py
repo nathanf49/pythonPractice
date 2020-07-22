@@ -12,7 +12,7 @@ class minHeap:
                 raise TypeError("Root node must contain a number")
         self.root = root
 
-    def addNode(self, newNode):
+    def insert(self, newNode):
         if type(newNode) is not binaryNode: # if input is not a binary node, attempt to cast it if value is a number
             if type(newNode) is int or type(newNode) is float:
                 newNode = binaryNode(newNode)
@@ -21,9 +21,10 @@ class minHeap:
         else: # if new Node is a binary Node, make sure it contains a number
             if type(newNode.value) is not int and type(newNode.value) is not float:
                 raise TypeError("New node must contain a number")
+        self.children.append(newNode)
 
 
-    def removeMin(self):
+    
 
     def findOpen(self): #finds the first node with a position to allow a child
         current = self.root
@@ -32,3 +33,4 @@ class minHeap:
 
 
 x= minHeap(5)
+x.insert(7)
