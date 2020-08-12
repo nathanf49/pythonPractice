@@ -20,13 +20,13 @@ Array
 
 ---
 
-Binary
+Binary - Done
 
 - Sum of Two Integers - https://leetcode.com/problems/sum-of-two-integers/ - Done
-- Number of 1 Bits - https://leetcode.com/problems/number-of-1-bits/
-- Counting Bits - https://leetcode.com/problems/counting-bits/
-- Missing Number - https://leetcode.com/problems/missing-number/
-- Reverse Bits - https://leetcode.com/problems/reverse-bits/
+- Number of 1 Bits - https://leetcode.com/problems/number-of-1-bits/ - Done
+- Counting Bits - https://leetcode.com/problems/counting-bits/ - Done
+- Missing Number - https://leetcode.com/problems/missing-number/ - Done
+- Reverse Bits - https://leetcode.com/problems/reverse-bits/ - Done
 
 ---
 
@@ -35,7 +35,6 @@ Dynamic Programming
 - Climbing Stairs - https://leetcode.com/problems/climbing-stairs/ - Done
 - Coin Change - https://leetcode.com/problems/coin-change/
 - Longest Increasing Subsequence - https://leetcode.com/problems/longest-increasing-subsequence/
-- Longest Common Subsequence -
 - Word Break Problem - https://leetcode.com/problems/word-break/
 - Combination Sum - https://leetcode.com/problems/combination-sum-iv/
 - House Robber - https://leetcode.com/problems/house-robber/
@@ -71,11 +70,11 @@ Interval
 
 Linked List
 
-- Reverse a Linked List - https://leetcode.com/problems/reverse-linked-list/
+- Reverse a Linked List - https://leetcode.com/problems/reverse-linked-list/ - Done
 - Detect Cycle in a Linked List - https://leetcode.com/problems/linked-list-cycle/
 - Merge Two Sorted Lists - https://leetcode.com/problems/merge-two-sorted-lists/
 - Merge K Sorted Lists - https://leetcode.com/problems/merge-k-sorted-lists/
-- Remove Nth Node From End Of List - https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+- Remove Nth Node From End Of List - https://leetcode.com/problems/remove-nth-node-from-end-of-list/ - Done
 - Reorder List - https://leetcode.com/problems/reorder-list/
 
 ---

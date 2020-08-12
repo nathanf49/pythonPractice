@@ -16,7 +16,7 @@
 
 # Math is what you would expect
 1 + 1   # => 2
-8 - 1   # => 7
+8 - 1   # => 7(spacesNeeded - 1)
 10 * 2  # => 20
 35 / 5  # => 7.0
 
