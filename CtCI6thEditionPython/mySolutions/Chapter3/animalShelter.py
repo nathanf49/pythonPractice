@@ -81,3 +81,6 @@ def main():
     animalShelter.enqueue(blackMexican)
     animalShelter.enqueue(fido)
     return animalShelter
+
+if __name__ == "__main__":
+    animalShelter = main()

@@ -12,7 +12,8 @@ from stack import stack
 
 
 class plateStack:
-    def __init__(self, capacity, startValue=None):
+    def __init__(self, capacity
+                 , startValue=None):
         self.capacity = capacity  # sets maximum number of objects in each substack
         self.stacks = []  # holds individual stacks
         if startValue is None:  # makes first substack
