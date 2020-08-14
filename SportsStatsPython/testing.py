@@ -33,7 +33,6 @@ class Player: # import player information from dictionaries
                     self.name = player['full_name']
                     self.isActive = player['is_active']
 
-
         else:
             for player in player_dict: # check for player first or last name
                 if player['first_name'].lower() == playerName.lower() or player['last_name'].lower() == playerName.lower():
@@ -46,7 +45,10 @@ class Player: # import player information from dictionaries
                         self.name = player['full_name']
                         self.isActive = player['is_active']
 
-        Exception(str(playerName) + " could not be found. You may want to check your spelling.")
+        if hasattr(Player, 'self.id') == False: # player was not found
+            Exception(str(playerName) + " could not be found. You may want to check your spelling.")
+
+        # player found, can now input stats with the player ID
 
     def updateAllStats(self, season=None):
         if season is not None: # updating a season, not the whole career
@@ -57,10 +59,32 @@ class Player: # import player information from dictionaries
             'need to finish updates after importing career stats'
 
         else:
+            # gets career dataframes from nba_api module
             gamelog = playergamelog.PlayerGameLog(player_id=self.id, season=SeasonAll.all)
-            self.careerStats = gamelog.get_data_frames()
+            careerStats = gamelog.get_data_frames()
 
+            # makes a list of all years the player has played in the nba
+            activeYears = []
+            for year in careerStats[0]['SEASON_ID']:
+                if str(year)[-4:] not in activeYears:
+                    activeYears.append(str(year)[-4:])
 
+            # makes season stats 1 year at a time
+            for year in activeYears:
+                self.seasonStats.append(updateAllStats(year))
+
+class GameStats_Player:
+    def __init__(self,seasonID=None,playerID=None,gameID=None,date=None,matchup=None,WL=None,MIN=None,FGM=None,FGA=None,FG_PCT=None,FG3M=None,FG3A=None,FG3_PCT=None,FTM=None,FTA=None,FT_PCT=None,OREB=None,DREB=None,REB=None,AST=None,STL=None,TO=None,PF=None,PLUS_MINUS=None):
+        if seasonID is not None:
+            self.seasonID = str(seasonID)
+        if playerID is not None:
+            self.playerID = str(playerID)
+        if gameID is not None:
+            self.gameID = str(gameID)
+        if date is not None:
+            self.date = str(date)
+        if matchup is not None:
+            self.matchup = str(matchup)
 
 
 
