@@ -1,21 +1,29 @@
 from nba_api.stats.static import players, teams
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.library.parameters import SeasonAll
+from nba_api.stats.endpoints import leaguegamefinder
 
-"""
-
-Need to work on importing stats to finish getting player data
-
-"""
-player_dict = players.get_players()
+'''
+#this time we convert it to a dataframe in the same line of code
+GSW = [x for x in teams if x['full_name'] == 'Golden State Warriors'][0]
+GSW_id = GSW['id']
+GSW_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=GSW_id).get_data_frames()[0]
+'''
 team_dict = teams.get_teams()
-import pandas as pd
+player_dict = players.get_players()
 
 gamelog_bron = playergamelog.PlayerGameLog(player_id='2544', season='2018')
 
 # Converts gamelog object into a pandas dataframe
 # can also convert to JSON or dictionary
 df_bron_games_2018 = gamelog_bron.get_data_frames()
+
+def findTeamAbbreviation(teamName):
+    teamName = str(teamName).lower()
+    for team in team_dict:
+        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName:
+            return team['abbreviation'].upper()
+    raise Exception('Team not found')
 
 
 class Player:  # import player information from dictionaries
@@ -227,6 +235,7 @@ class Season:
     def __init__(self, season, games=None):
         self.season = str(season)
         self.games = []
+
         if games is not None:
             self.addGame(games)
 
@@ -252,32 +261,74 @@ class Season:
 
         self.updateStats()
 
-    def getSeasonPTS(self):
-        totalPoints = 0
+    def getNumberOfGames(self,team):
+        team = findTeamAbbreviation(team)
+        number = 0
         for game in self.games:
-            totalPoints += game.PTS
+            if team in game.matchup:
+                number += 1
+        if number == 0:
+            raise Exception('This teams did not play')
+        return number
+
+    def getSeasonPTS(self,team=None):
+        totalPoints = 0
+        if team == None:
+            for game in self.games:
+                totalPoints += game.PTS
+        else:
+            team = findTeamAbbreviation(team)
+            for game in self.games:
+                if team in game.matchup:
+                    totalPoints += game.points
+
         return totalPoints
 
-    def getPPG(self):
-        return self.PTS/len(self.games)
+    def getPPG(self,team=None):
+        if team == None:
+            return self.PTS/len(self.games)
+        else:
+            team = findTeamAbbreviation(team)
+            return self.getSeasonPTS(team) / self.getNumberOfGames(team)
 
-    def getSeasonREB(self):
+    def getSeasonREB(self,team=None):
         totalREB = 0
-        for game in self.games:
-            totalREB += game.REB
+        if team == None:
+            for game in self.games:
+                totalREB += game.REB
+        else:
+            team = findTeamAbbreviation(team)
+            for game in self.games:
+                if team in game.matchup:
+                    totalREB += 1
+
         return totalREB
 
-    def getRPG(self):
-        return self.REB/len(self.games)
+    def getRPG(self,team=None):
+        if team == None:
+            return self.REB/len(self.games)
+        else:
+            team = findTeamAbbreviation(team)
+            return self.getSeasonREB(team) / self.getNumberOfGames(team)
 
-    def getSeasonAST(self):
+    def getSeasonAST(self,team=None):
         totalAST = 0
-        for game in self.games:
-            totalAST += game.AST
+        if team == None:
+            for game in self.games:
+                totalAST += game.AST
+        else:
+            team = findTeamAbbreviation(team)
+            for game in self.games:
+                if team in game.matchup:
+                    totalAST += 1
         return totalAST
 
-    def getAPG(self):
-        return self.AST/len(self.games)
+    def getAPG(self,team=None):
+        if team == None:
+            return self.AST/len(self.games)
+        else:
+            team = findTeamAbbreviation(team)
+            return self.getSeasonAST(team) / self.getNumberOfGames(team)
 
     def updateStats(self):
         self.PTS = self.getSeasonPTS()
@@ -288,7 +339,7 @@ class Season:
         self.APG = self.getAPG()
 
     def __str__(self):
-        return self.season + ': ' + str(self.PPG) + '/' + str(self.RPG)+ '/' + str(self.APG) + ', ' + str(len(self.games)) + ' games played'
+        return self.season + ': ' + str(self.PPG)[:4] + '/' + str(self.RPG)[:4] + '/' + str(self.APG)[:4] + ', ' + str(len(self.games)) + ' games played'
 
 
 class Career:
