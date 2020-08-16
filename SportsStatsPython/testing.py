@@ -18,14 +18,6 @@ gamelog_bron = playergamelog.PlayerGameLog(player_id='2544', season='2018')
 # can also convert to JSON or dictionary
 df_bron_games_2018 = gamelog_bron.get_data_frames()
 
-def findTeamAbbreviation(teamName):
-    teamName = str(teamName).lower()
-    for team in team_dict:
-        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName:
-            return team['abbreviation'].upper()
-    raise Exception('Team not found')
-
-
 class Player:  # import player information from dictionaries
     def __init__(self, playerName=None):
         while type(playerName) is not str:
@@ -261,8 +253,8 @@ class Season:
 
         self.updateStats()
 
-    def getNumberOfGames(self,team):
-        team = findTeamAbbreviation(team)
+    def getNumberOfGames(self, team):
+        team = getTeamAbbreviation(team)
         number = 0
         for game in self.games:
             if team in game.matchup:
@@ -271,64 +263,64 @@ class Season:
             raise Exception('This teams did not play')
         return number
 
-    def getSeasonPTS(self,team=None):
+    def getSeasonPTS(self, team=None):
         totalPoints = 0
-        if team == None:
+        if team is None:
             for game in self.games:
                 totalPoints += game.PTS
         else:
-            team = findTeamAbbreviation(team)
+            team = getTeamAbbreviation(team)
             for game in self.games:
                 if team in game.matchup:
-                    totalPoints += game.points
+                    totalPoints += game.PTS
 
         return totalPoints
 
-    def getPPG(self,team=None):
-        if team == None:
-            return self.PTS/len(self.games)
+    def getPPG(self, team=None):
+        if team is None:
+            return self.PTS / len(self.games)
         else:
-            team = findTeamAbbreviation(team)
-            return self.getSeasonPTS(team) / self.getNumberOfGames(team)
+            team = getTeamAbbreviation(team)
+            return round(self.getSeasonPTS(team) / self.getNumberOfGames(team), 4)
 
-    def getSeasonREB(self,team=None):
+    def getSeasonREB(self, team=None):
         totalREB = 0
-        if team == None:
+        if team is None:
             for game in self.games:
                 totalREB += game.REB
         else:
-            team = findTeamAbbreviation(team)
+            team = getTeamAbbreviation(team)
             for game in self.games:
                 if team in game.matchup:
                     totalREB += 1
 
         return totalREB
 
-    def getRPG(self,team=None):
-        if team == None:
+    def getRPG(self, team=None):
+        if team is None:
             return self.REB/len(self.games)
         else:
-            team = findTeamAbbreviation(team)
-            return self.getSeasonREB(team) / self.getNumberOfGames(team)
+            team = getTeamAbbreviation(team)
+            return round(self.getSeasonREB(team) / self.getNumberOfGames(team), 3)
 
-    def getSeasonAST(self,team=None):
+    def getSeasonAST(self, team=None):
         totalAST = 0
-        if team == None:
+        if team is None:
             for game in self.games:
                 totalAST += game.AST
         else:
-            team = findTeamAbbreviation(team)
+            team = getTeamAbbreviation(team)
             for game in self.games:
                 if team in game.matchup:
                     totalAST += 1
         return totalAST
 
-    def getAPG(self,team=None):
-        if team == None:
+    def getAPG(self, team=None):
+        if team is None:
             return self.AST/len(self.games)
         else:
-            team = findTeamAbbreviation(team)
-            return self.getSeasonAST(team) / self.getNumberOfGames(team)
+            team = getTeamAbbreviation(team)
+            return round(self.getSeasonAST(team) / self.getNumberOfGames(team), 3)
 
     def updateStats(self):
         self.PTS = self.getSeasonPTS()
@@ -339,9 +331,12 @@ class Season:
         self.APG = self.getAPG()
 
     def __str__(self):
-        return self.season + ': ' + str(self.PPG)[:4] + '/' + str(self.RPG)[:4] + '/' + str(self.APG)[:4] + ', ' + str(len(self.games)) + ' games played'
+        return self.season + ': ' + str(self.PPG) + '/' + str(self.RPG) + '/' + str(self.APG) + ', ' + str(len(self.games)) + ' games played'
 
 
+"""
+Might want to move entire career class to player
+"""
 class Career:
     def __init__(self, seasons=None):
         self.seasons = []
@@ -373,38 +368,70 @@ class Career:
         self.seasons.append(season)
         self.updateStats()
 
-    def getCareerGames(self):
+    def getCareerGames(self, team=None):
         totalGames = 0
-        for year in self.seasons:
-            totalGames += len(year.games)
+        if team is None:
+            for year in self.seasons:
+                totalGames += len(year.games)
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalGames += year.getNumberOfGames(team)
         return totalGames
 
-    def getCareerPTS(self):
+    def getCareerPTS(self, team=None):
         totalPoints = 0
-        for year in self.seasons:
-            totalPoints += year.PTS
+        if team is None:
+            for year in self.seasons:
+                totalPoints += year.PTS
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalPoints += year.getSeasonPTS(team)
         return totalPoints
 
-    def getCareerPPG(self):
-        return self.careerPTS/self.careerGames
+    def getCareerPPG(self, team=None):
+        if team is None:
+            return round(self.careerPTS / self.careerGames, 4)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerPTS(team) / self.getCareerGames(team), 4)
 
-    def getCareerREB(self):
+    def getCareerREB(self, team=None):
         totalREB = 0
-        for year in self.seasons:
-            totalREB += year.REB
+        if team is None:
+            for year in self.seasons:
+                totalREB += year.REB
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalREB += year.getSeasonREB(team)
         return totalREB
 
-    def getCareerRPG(self):
-        return self.careerREB/self.careerGames
+    def getCareerRPG(self, team=None):
+        if team is None:
+            return round(self.careerREB/self.careerGames, 3)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerREB(team) / self.getCareerGames(team), 3)
 
-    def getCareerAST(self):
+    def getCareerAST(self, team=None):
         totalAST = 0
-        for year in self.seasons:
-            totalAST += year.AST
+        if team is None:
+            for year in self.seasons:
+                totalAST += year.AST
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalAST += year.getSeasonAST(team)
         return totalAST
 
-    def getCareerAPG(self):
-        return self.getCareerAST()/self.careerGames
+    def getCareerAPG(self, team=None):
+        if team is None:
+            return round(self.getCareerAST()/self.careerGames, 3)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerAST(team) / self.getCareerGames(team), 3)
 
     def getActiveSeasons(self):
         activeSeasons = []
@@ -426,11 +453,18 @@ class Career:
         return "'" + str(min(self.activeSeasons))[-2:] + '-' + "'" + str(max(self.activeSeasons))[-2:] + ', Points: ' + str(self.careerPTS) + ', Rebounds: ' + str(self.careerREB) + ', Assists: ' + str(self.careerAST)
 
 
-
+def getTeamAbbreviation(teamName):
+    teamName = str(teamName).lower()
+    for team in team_dict:
+        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName:
+            return team['abbreviation'].upper()
+    raise Exception('Team not found')
 
 
 
 harden = Player('James Harden')
+miami19PPG = harden.careerStats.seasons[0].getPPG('miami')
+miamiPPG = harden.careerStats.getCareerPPG('miami')
 
 '''
 yourPlayers = []
