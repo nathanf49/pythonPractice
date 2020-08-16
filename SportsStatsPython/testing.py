@@ -28,11 +28,10 @@ class Player:  # import player information from dictionaries
                     self.id = player['id']
                     self.name = player['full_name']
                     self.isActive = player['is_active']
-                    self.careerStats = self.updateStats()
-                    return
+                    self.seasons = self.getStats()
 
-        else:
-            for player in player_dict:  # check for player first or last name
+        else: # check for player first or last name
+            for player in player_dict:
                 if player['first_name'].lower() == playerName.lower() or player[
                     'last_name'].lower() == playerName.lower():
                     checkPlayer = ''
@@ -43,15 +42,121 @@ class Player:  # import player information from dictionaries
                         self.id = player['id']
                         self.name = player['full_name']
                         self.isActive = player['is_active']
-                        self.careerStats = self.updateStats()
-                        return
+                        self.seasons = self.getStats()
 
-        if hasattr(Player, 'self.id') is False:  # player was not found
+        if hasattr(self, 'id') is False:  # player was not found
             raise Exception(str(playerName) + " could not be found. You may want to check your spelling.")
 
-        # player found, can now input stats with the player ID
+        # get career stats
+        self.careerGames = self.getCareerGames()
+        self.PTS = self.getCareerPTS()
+        self.PPG = self.getCareerPPG()
+        self.REB = self.getCareerREB()
+        self.RPG = self.getCareerRPG()
+        self.AST = self.getCareerAST()
+        self.APG = self.getCareerAPG()
+        self.activeSeasons = self.getActiveSeasons()
 
-    def updateStats(self, season=None):
+    def addSeason(self, season):
+        if type(season) is Season:
+            self.seasons.append(season)
+        elif type(season) is list:
+            for current in season:
+                if type(current) is Season:
+                    self.seasons.append(current)
+                else:
+                    raise TypeError('Only seasons can be added to a career')
+        elif season is not None:
+            raise TypeError('Only seasons can be added to a career')
+        self.updateStats()
+
+    def getCareerGames(self, team=None):
+        totalGames = 0
+        if team is None:
+            for year in self.seasons:
+                totalGames += len(year.games)
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                 totalGames += year.getNumberOfGames(team)
+        return totalGames
+
+    def getCareerPTS(self, team=None):
+        totalPoints = 0
+        if team is None:
+            for year in self.seasons:
+                totalPoints += year.PTS
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalPoints += year.getSeasonPTS(team)
+        return totalPoints
+
+    def getCareerPPG(self, team=None):
+        if team is None:
+            return round(self.PTS / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerPTS(team) / self.getCareerGames(team), 2)
+
+    def getCareerREB(self, team=None):
+        totalREB = 0
+        if team is None:
+            for year in self.seasons:
+                totalREB += year.REB
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalREB += year.getSeasonREB(team)
+        return totalREB
+
+    def getCareerRPG(self, team=None):
+        if team is None:
+            return round(self.REB / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerREB(team) / self.getCareerGames(team), 2)
+
+    def getCareerAST(self, team=None):
+        totalAST = 0
+        if team is None:
+            for year in self.seasons:
+                totalAST += year.AST
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalAST += year.getSeasonAST(team)
+        return totalAST
+
+    def getCareerAPG(self, team=None):
+        if team is None:
+            return round(self.getCareerAST() / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getCareerAST(team) / self.getCareerGames(team), 2)
+
+    def getActiveSeasons(self):
+        activeSeasons = []
+        for year in self.seasons:
+            activeSeasons.append(int(str(year.games[0].seasonID)[-4:]))
+        return activeSeasons
+
+    def updateStats(self):
+        self.careerGames = self.getCareerGames()
+        self.PTS = self.getCareerPTS()
+        self.PPG = self.getCareerPPG()
+        self.REB = self.getCareerREB()
+        self.RPG = self.getCareerRPG()
+        self.AST = self.getCareerAST()
+        self.APG = self.getCareerAPG()
+        self.activeSeasons = self.getActiveSeasons()
+        
+    def getSeason(self, season):
+        if season not in self.activeSeasons:
+            raise ValueError('Not a valid season')
+        return self.seasons[self.activeSeasons.index(season)]
+
+    def getStats(self, season=None):
         if season is not None:  # updating a season, not the whole career
             while len(str(season)) != 4:
                 season = int(input('Please enter the season you want to update as a 4 digit year'))
@@ -80,14 +185,14 @@ class Player:  # import player information from dictionaries
                     activeYears.append(str(year)[-4:])
 
             # makes season stats 1 year at a time
-            careerGames = []
+            career = []
             for year in activeYears:
-                careerGames.append(self.updateStats(year))
+                career.append(self.getStats(year))
             # after making each year as an individual season, cast as a Career
-            return Career(careerGames)
+            return career
 
     def __str__(self):
-        return 'PPG: ' + str(self.careerStats.careerPPG)[:4] + ' RPG: ' + str(self.careerStats.careerRPG)[:4] + ' APG: ' + str(self.careerStats.careerAPG)[:4]
+        return 'PPG: ' + str(self.PPG) + ' RPG: ' + str(self.RPG) + ' APG: ' + str(self.APG)
 
 
 class GameStats:
@@ -150,7 +255,10 @@ class GameStats:
             self.FG_PCT = float(FG_PCT)
         else:  # calculate FG% if not input
             if self.FGM is not None and self.FGA is not None:
-                self.FG_PCT = self.FGM / self.FGA
+                try:
+                    self.FG_PCT = self.FGM / self.FGA
+                except ZeroDivisionError:
+                    self.FG_PCT = 0
             else:
                 self.FG_PCT = None
         if FG3M is not None:
@@ -165,7 +273,10 @@ class GameStats:
             self.FG3_PCT = float(FG3_PCT)
         else:  # calculate FG3% if not input
             if self.FG3M is not None and self.FG3A is not None:
-                self.FG3_PCT = self.FG3M / self.FG3A
+                try:
+                    self.FG3_PCT = self.FG3M / self.FG3A
+                except ZeroDivisionError:
+                    self.FG3_PCT = 0
             else:
                 self.FG3_PCT = None
         if FTM is not None:
@@ -180,7 +291,10 @@ class GameStats:
             self.FT_PCT = float(FT_PCT)
         else:  # calculate FT% if not input
             if self.FTM is not None and self.FTA is not None:
-                self.FT_PCT = self.FTM / self.FTA
+                try:
+                    self.FT_PCT = self.FTM / self.FTA
+                except ZeroDivisionError:
+                    self.FT_PCT = 0
             else:
                 self.FT_PCT = None
         if OREB is not None:
@@ -281,7 +395,7 @@ class Season:
             return self.PTS / len(self.games)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getSeasonPTS(team) / self.getNumberOfGames(team), 4)
+            return round(self.getSeasonPTS(team) / self.getNumberOfGames(team), 2)
 
     def getSeasonREB(self, team=None):
         totalREB = 0
@@ -301,7 +415,7 @@ class Season:
             return self.REB/len(self.games)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getSeasonREB(team) / self.getNumberOfGames(team), 3)
+            return round(self.getSeasonREB(team) / self.getNumberOfGames(team), 2)
 
     def getSeasonAST(self, team=None):
         totalAST = 0
@@ -320,7 +434,7 @@ class Season:
             return self.AST/len(self.games)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getSeasonAST(team) / self.getNumberOfGames(team), 3)
+            return round(self.getSeasonAST(team) / self.getNumberOfGames(team), 2)
 
     def updateStats(self):
         self.PTS = self.getSeasonPTS()
@@ -334,125 +448,6 @@ class Season:
         return self.season + ': ' + str(self.PPG) + '/' + str(self.RPG) + '/' + str(self.APG) + ', ' + str(len(self.games)) + ' games played'
 
 
-"""
-Might want to move entire career class to player
-"""
-class Career:
-    def __init__(self, seasons=None):
-        self.seasons = []
-        # makes sure that seasons input are of the right type if user attempts to set up career with seasons
-        if type(seasons) is Season:
-            self.seasons.append(seasons)
-        elif type(seasons) is list:
-            for season in seasons:
-                if type(season) is Season:
-                    self.seasons.append(season)
-                else:
-                    raise TypeError('Only seasons can be added to a career')
-        elif seasons is not None:
-            raise TypeError('Only seasons can be added to a career')
-
-        # get career stats
-        self.careerGames = self.getCareerGames()
-        self.careerPTS = self.getCareerPTS()
-        self.careerPPG = self.getCareerPPG()
-        self.careerREB = self.getCareerREB()
-        self.careerRPG = self.getCareerRPG()
-        self.careerAST = self.getCareerAST()
-        self.careerAPG = self.getCareerAPG()
-        self.activeSeasons = self.getActiveSeasons()
-
-    def addSeason(self, season):
-        if type(season) is not Season:
-            raise TypeError('Can only add seasons to a career')
-        self.seasons.append(season)
-        self.updateStats()
-
-    def getCareerGames(self, team=None):
-        totalGames = 0
-        if team is None:
-            for year in self.seasons:
-                totalGames += len(year.games)
-        else:
-            team = getTeamAbbreviation(team)
-            for year in self.seasons:
-                totalGames += year.getNumberOfGames(team)
-        return totalGames
-
-    def getCareerPTS(self, team=None):
-        totalPoints = 0
-        if team is None:
-            for year in self.seasons:
-                totalPoints += year.PTS
-        else:
-            team = getTeamAbbreviation(team)
-            for year in self.seasons:
-                totalPoints += year.getSeasonPTS(team)
-        return totalPoints
-
-    def getCareerPPG(self, team=None):
-        if team is None:
-            return round(self.careerPTS / self.careerGames, 4)
-        else:
-            team = getTeamAbbreviation(team)
-            return round(self.getCareerPTS(team) / self.getCareerGames(team), 4)
-
-    def getCareerREB(self, team=None):
-        totalREB = 0
-        if team is None:
-            for year in self.seasons:
-                totalREB += year.REB
-        else:
-            team = getTeamAbbreviation(team)
-            for year in self.seasons:
-                totalREB += year.getSeasonREB(team)
-        return totalREB
-
-    def getCareerRPG(self, team=None):
-        if team is None:
-            return round(self.careerREB/self.careerGames, 3)
-        else:
-            team = getTeamAbbreviation(team)
-            return round(self.getCareerREB(team) / self.getCareerGames(team), 3)
-
-    def getCareerAST(self, team=None):
-        totalAST = 0
-        if team is None:
-            for year in self.seasons:
-                totalAST += year.AST
-        else:
-            team = getTeamAbbreviation(team)
-            for year in self.seasons:
-                totalAST += year.getSeasonAST(team)
-        return totalAST
-
-    def getCareerAPG(self, team=None):
-        if team is None:
-            return round(self.getCareerAST()/self.careerGames, 3)
-        else:
-            team = getTeamAbbreviation(team)
-            return round(self.getCareerAST(team) / self.getCareerGames(team), 3)
-
-    def getActiveSeasons(self):
-        activeSeasons = []
-        for year in self.seasons:
-            activeSeasons.append(int(str(year.games[0].seasonID)[-4:]))
-        return activeSeasons
-
-    def updateStats(self):
-        self.careerGames = self.getCareerGames()
-        self.careerPTS = self.getCareerPTS()
-        self.careerPPG = self.getCareerPPG()
-        self.careerREB = self.getCareerREB()
-        self.careerRPG = self.getCareerRPG()
-        self.careerAST = self.getCareerAST()
-        self.careerAPG = self.getCareerAPG()
-        self.activeSeasons = self.getActiveSeasons()
-
-    def __str__(self):
-        return "'" + str(min(self.activeSeasons))[-2:] + '-' + "'" + str(max(self.activeSeasons))[-2:] + ', Points: ' + str(self.careerPTS) + ', Rebounds: ' + str(self.careerREB) + ', Assists: ' + str(self.careerAST)
-
-
 def getTeamAbbreviation(teamName):
     teamName = str(teamName).lower()
     for team in team_dict:
@@ -462,9 +457,7 @@ def getTeamAbbreviation(teamName):
 
 
 
-harden = Player('James Harden')
-miami19PPG = harden.careerStats.seasons[0].getPPG('miami')
-miamiPPG = harden.careerStats.getCareerPPG('miami')
+jordan = Player('Michael Jordan')
 
 '''
 yourPlayers = []
