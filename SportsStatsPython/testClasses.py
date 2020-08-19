@@ -1,12 +1,30 @@
 from nba_api.stats.static import players, teams
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.library.parameters import SeasonAll
+from nba_api.stats.endpoints import teamgamelog
+from nba_api.stats.endpoints import teamgamelogs
+from nba_api.stats.endpoints import leaguegamefinder
 import time
+
+
+
+import nba_py
+
 
 team_dict = teams.get_teams()
 player_dict = players.get_players()
 
-class Player:  # import player information from dictionaries
+#this time we convert it to a dataframe in the same line of code
+GSW = [x for x in team_dict if x['full_name'] == 'Golden State Warriors'][0]
+GSW_id = GSW['id']
+
+GSW_games_2018 = teamgamelog.TeamGameLog(GSW_id,season='2018')
+gamelog_bron = playergamelog.PlayerGameLog(player_id='2544', season='2018')
+
+# Converts gamelog object into a dictionary
+dict_bron_games_2018 = gamelog_bron.get_dict()
+
+class Team:  # very similar to player class
     def __init__(self, playerName=None):
         while type(playerName) is not str:
             playerName = str(input('Please input the name of a current or past NBA player: '))
@@ -19,7 +37,8 @@ class Player:  # import player information from dictionaries
 
         else:  # check for player first or last name
             for player in player_dict:
-                if player['first_name'].lower() == playerName.lower() or player['last_name'].lower() == playerName.lower():
+                if player['first_name'].lower() == playerName.lower() or player[
+                    'last_name'].lower() == playerName.lower():
                     checkPlayer = ''
                     # confirm since we don't have the full name
                     while checkPlayer not in ['yes', 'Yes', 'YES', 'YEs', 'Y', 'y', 'no', 'No', 'NO', 'n', 'N']:
@@ -34,13 +53,13 @@ class Player:  # import player information from dictionaries
 
         # get career stats
         self.seasons = self.getStats()
-        self.careerGames = self.getCareerGames()
-        self.PTS = self.getCareerPTS()
-        self.PPG = self.getCareerPPG()
-        self.REB = self.getCareerREB()
-        self.RPG = self.getCareerRPG()
-        self.AST = self.getCareerAST()
-        self.APG = self.getCareerAPG()
+        self.careerGames = self.getGames()
+        self.PTS = self.getPTS()
+        self.PPG = self.getPPG()
+        self.REB = self.getREB()
+        self.RPG = self.getRPG()
+        self.AST = self.getAST()
+        self.APG = self.getAPG()
         self.activeSeasons = self.getActiveSeasons()
 
     def addSeason(self, season):
@@ -57,7 +76,7 @@ class Player:  # import player information from dictionaries
 
         self.updateStats()
 
-    def getCareerGames(self, team=None):
+    def getGames(self, team=None):
         totalGames = 0
         if team is None:
             for year in self.seasons:
@@ -68,7 +87,7 @@ class Player:  # import player information from dictionaries
                 totalGames += year.getNumberOfGames(team)
         return totalGames
 
-    def getCareerPTS(self, team=None):
+    def getPTS(self, team=None):
         totalPoints = 0
         if team is None:
             for year in self.seasons:
@@ -79,14 +98,14 @@ class Player:  # import player information from dictionaries
                 totalPoints += year.getSeasonPTS(team)
         return totalPoints
 
-    def getCareerPPG(self, team=None):
+    def getPPG(self, team=None):
         if team is None:
             return round(self.PTS / self.careerGames, 2)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getCareerPTS(team) / self.getCareerGames(team), 2)
+            return round(self.getPTS(team) / self.getGames(team), 2)
 
-    def getCareerREB(self, team=None):
+    def getREB(self, team=None):
         totalREB = 0
         if team is None:
             for year in self.seasons:
@@ -97,14 +116,14 @@ class Player:  # import player information from dictionaries
                 totalREB += year.getSeasonREB(team)
         return totalREB
 
-    def getCareerRPG(self, team=None):
+    def getRPG(self, team=None):
         if team is None:
             return round(self.REB / self.careerGames, 2)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getCareerREB(team) / self.getCareerGames(team), 2)
+            return round(self.getREB(team) / self.getGames(team), 2)
 
-    def getCareerAST(self, team=None):
+    def getAST(self, team=None):
         totalAST = 0
         if team is None:
             for year in self.seasons:
@@ -115,12 +134,12 @@ class Player:  # import player information from dictionaries
                 totalAST += year.getSeasonAST(team)
         return totalAST
 
-    def getCareerAPG(self, team=None):
+    def getAPG(self, team=None):
         if team is None:
             return round(self.AST / self.careerGames, 2)
         else:
             team = getTeamAbbreviation(team)
-            return round(self.getCareerAST(team) / self.getCareerGames(team), 2)
+            return round(self.getAST(team) / self.getGames(team), 2)
 
     def getActiveSeasons(self):
         activeSeasons = []
@@ -129,15 +148,15 @@ class Player:  # import player information from dictionaries
         return activeSeasons
 
     def updateStats(self):
-        self.careerGames = self.getCareerGames()
-        self.PTS = self.getCareerPTS()
-        self.PPG = self.getCareerPPG()
-        self.REB = self.getCareerREB()
-        self.RPG = self.getCareerRPG()
-        self.AST = self.getCareerAST()
-        self.APG = self.getCareerAPG()
+        self.careerGames = self.getGames()
+        self.PTS = self.getPTS()
+        self.PPG = self.getPPG()
+        self.REB = self.getREB()
+        self.RPG = self.getRPG()
+        self.AST = self.getAST()
+        self.APG = self.getAPG()
         self.activeSeasons = self.getActiveSeasons()
-        
+
     def getSeason(self, season):
         if season not in self.activeSeasons:
             raise ValueError('Not a valid season')
@@ -166,7 +185,179 @@ class Player:  # import player information from dictionaries
             career = []
             for year in activeYears:
                 career.append(self.getStats(year))
-            # after making each year as an individual season, return as a Career
+            # after making each year as an individual season, return as a
+            return career
+
+    def __str__(self):
+        return 'PPG: ' + str(self.PPG) + ' RPG: ' + str(self.RPG) + ' APG: ' + str(self.APG)
+
+
+class Player:  # import player information from dictionaries
+    def __init__(self, playerName, season=None):
+        while type(playerName) is not str:
+            playerName = str(input('Please input the name of a current or past NBA player: '))
+        if ' ' in playerName:  # name is a full name
+            for player in player_dict:
+                if player['full_name'].lower() == playerName.lower():  # avoid case issues by converting all to lower
+                    self.id = player['id']
+                    self.name = player['full_name']
+                    self.isActive = player['is_active']
+
+        else:  # check for player first or last name
+            for player in player_dict:
+                if player['first_name'].lower() == playerName.lower() or player['last_name'].lower() == playerName.lower():
+                    checkPlayer = ''
+                    # confirm since we don't have the full name
+                    while checkPlayer not in ['yes', 'Yes', 'YES', 'YEs', 'Y', 'y', 'no', 'No', 'NO', 'n', 'N']:
+                        checkPlayer = input('Did you mean ' + player['full_name'] + '?')
+                    if checkPlayer in ['yes', 'Yes', 'YES', 'YEs', 'Y', 'y']:  # only input player if the answer is yes
+                        self.id = player['id']
+                        self.name = player['full_name']
+                        self.isActive = player['is_active']
+
+        if hasattr(self, 'id') is False:  # player was not found
+            raise Exception(str(playerName) + " could not be found. You may want to check your spelling.")
+
+        # get career stats
+        self.seasons = self.getStats(season)
+        self.careerGames = self.getGames()
+        self.PTS = self.getPTS()
+        self.PPG = self.getPPG()
+        self.REB = self.getREB()
+        self.RPG = self.getRPG()
+        self.AST = self.getAST()
+        self.APG = self.getAPG()
+        self.activeSeasons = self.getActiveSeasons()
+
+    def addSeason(self, season):
+        if type(season) is Season:
+            self.seasons.append(season)
+        elif type(season) is list:
+            for current in season:
+                if type(current) is Season:
+                    self.seasons.append(current)
+                else:
+                    raise TypeError('Only seasons can be added to a career')
+        elif season is not None:
+            raise TypeError('Only seasons can be added to a career')
+
+        self.updateStats()
+
+    def getGames(self, team=None,season=None):
+        totalGames = 0
+        if season == None:
+            seasons = self.seasons
+        else:
+            if int(season) in self.activeSeasons:
+                seasons = self.seasons[self.activeSeasons.index(season)]
+        if team is None:
+            for year in seasons:
+                totalGames += len(year.games)
+        else:
+            team = getTeamAbbreviation(team)
+            for year in seasons:
+                totalGames += year.getNumberOfGames(team)
+        return totalGames
+
+    def getPTS(self, team=None):
+        totalPoints = 0
+        if team is None:
+            for year in self.seasons:
+                totalPoints += year.PTS
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalPoints += year.getSeasonPTS(team)
+        return totalPoints
+
+    def getPPG(self, team=None):
+        if team is None:
+            return round(self.PTS / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getPTS(team) / self.getGames(team), 2)
+
+    def getREB(self, team=None):
+        totalREB = 0
+        if team is None:
+            for year in self.seasons:
+                totalREB += year.REB
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalREB += year.getSeasonREB(team)
+        return totalREB
+
+    def getRPG(self, team=None):
+        if team is None:
+            return round(self.REB / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getREB(team) / self.getGames(team), 2)
+
+    def getAST(self, team=None):
+        totalAST = 0
+        if team is None:
+            for year in self.seasons:
+                totalAST += year.AST
+        else:
+            team = getTeamAbbreviation(team)
+            for year in self.seasons:
+                totalAST += year.getSeasonAST(team)
+        return totalAST
+
+    def getAPG(self, team=None):
+        if team is None:
+            return round(self.AST / self.careerGames, 2)
+        else:
+            team = getTeamAbbreviation(team)
+            return round(self.getAST(team) / self.getGames(team), 2)
+
+    def getActiveSeasons(self):
+        activeSeasons = []
+        for year in self.seasons:
+            activeSeasons.append(int(str(year.games[0][0])[-4:]))
+        return activeSeasons
+
+    def updateStats(self):
+        self.numberOfGames = self.getGames()
+        self.PTS = self.getPTS()
+        self.PPG = self.getPPG()
+        self.REB = self.getREB()
+        self.RPG = self.getRPG()
+        self.AST = self.getAST()
+        self.APG = self.getAPG()
+        self.seasons = self.getActiveSeasons()
+        
+    def getSeason(self, season):
+        if season not in self.activeSeasons:
+            raise ValueError('Not a valid season')
+        return self.seasons[self.activeSeasons.index(season)]
+
+    def getStats(self, season=None):
+        if season is not None:  # updating a season, not the whole career
+            while len(str(season)) != 4:
+                season = int(input('Please enter the season you want to update as a 4 digit year'))
+            gamelog = playergamelog.PlayerGameLog(player_id=self.id, season=season)
+            gamestats = gamelog.get_dict()
+            return [Season(str(season), gamestats['resultSets'][0]['rowSet'])]  # return as list for loops expected
+
+        else:
+            # gets career dataframes from nba_api module
+            gamelog = playergamelog.PlayerGameLog(player_id=self.id, season=SeasonAll.all)
+            careerStats = gamelog.get_data_frames()
+
+            # makes a list of all years the player has played in the nba
+            activeYears = []
+            for year in careerStats[0]['SEASON_ID']:
+                if str(year)[-4:] not in activeYears:
+                    activeYears.append(str(year)[-4:])
+
+            # makes season stats 1 year at a time
+            career = []
+            for year in activeYears:
+                career.append(self.getStats(year))
+            # after making each year as an individual season, return as a list
             return career
 
     def __str__(self):
@@ -292,11 +483,11 @@ def getTeamAbbreviation(teamName):
     raise Exception('Matchup not found')
 
 
-def getTime(name):
+def getTime(name,season=None):
     start = time.time()
-    player = Player(name)
+    player = Player(name,season)
     print(time.time() - start)
     return player
 
 
-#dame = getTime('Damian Lillard')
+dame = getTime('Damian Lillard',2019)
