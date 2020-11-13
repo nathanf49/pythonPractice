@@ -1,0 +1,4 @@
+To run the program, simply input the name of the file you wish to analyze.
+I ran into issues when changing the input file from a variable or the input function to a command line input, so I have left the input function as I am running out of time for the test. 
+The CSV, tempfile, shutil, and statistics libraries are required for this script, however they should all be included in an updated version of python3
+I have generally assumed that no one would attempt to input the wrong data types or inputs to break the script, however I have still included based input and variable checking.
