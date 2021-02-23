@@ -1,6 +1,5 @@
 """
-These are the best WORKING Player classes currently, classes that are being worked on are in testClasses,
-this currently works much better than test classes, may have to copy this to overwrite test classes
+These are the best WORKING Player classes currently, team classes are being worked on are in testClasses,
 """
 from nba_api.stats.static import players, teams
 from nba_api.stats.endpoints import playergamelog
@@ -477,28 +476,3 @@ def getTime(name):
 
 dame = getTime('Damian Lillard')
 #  jordan = Player('Michael Jordan')
-
-'''
-yourPlayers = []
-
-def addPlayer(playerName: str):
-    for player in player_dict:
-        if player['full_name'].lower() == playerName.lower():
-            yourPlayers.append(player)
-            print(player['full_name'] + ' added.')
-            return
-'''
-
-'''
-#this time we convert it to a dataframe in the same line of code
-GSW = [x for x in teams if x['full_name'] == 'Golden State Warriors'][0]
-GSW_id = GSW['id']
-GSW_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=GSW_id).get_data_frames()[0]
-
-class Team:
-    def __init__(self, teamName: str, roster=None):
-        self.teamName = teamName
-        
-    def addPlayer(self, player):
-        if 
-'''

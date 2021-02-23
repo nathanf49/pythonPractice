@@ -18,7 +18,7 @@ class animalQueue(queue):
             raise TypeError("Please only enqueue dogs or cats")
 
     def dequeueAny(self):
-        return self.pull()
+        return self.pull().name
 
     def dequeueDog(self):
         catStack = stack()
@@ -32,7 +32,7 @@ class animalQueue(queue):
         adopt = self.pull()  # saves dog
         while catStack.isEmpty() is False:  # adds cats back to the queue
             self.add(catStack.pop())
-        return adopt
+        return adopt.name
 
     def dequeueCat(self):
         dogStack = stack()
@@ -46,7 +46,7 @@ class animalQueue(queue):
         adopt = self.pull()  # saves cat
         while dogStack.isEmpty() is False:  # adds dogs back to the queue
             self.add(dogStack.pop())
-        return adopt
+        return adopt.name
 
 
 class dog:
