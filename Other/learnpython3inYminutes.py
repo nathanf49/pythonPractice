@@ -660,7 +660,6 @@ list(filter(lambda x: x > 5, [3, 4, 5, 6, 7]))  # => [6, 7]
 # You can import modules
 import math
 print(math.sqrt(16))  # => 4.0
-
 # You can get specific functions from a module
 from math import ceil, floor
 print(ceil(3.7))   # => 4.0

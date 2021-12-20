@@ -24,13 +24,15 @@ def print_sql(path):
     cursor = connection.cursor()
 
 
-    sql_file = open(str(path))
+    sql_file = open(path)
 
     sql_as_string = sql_file.read()
 
     cursor.executescript(sql_as_string)
 
 
-    for row in cursor.execute("SELECT * FROM airports"):
+    for row in cursor.execute("SELECT * FROM players"):
 
         print(row)
+
+path = "/home/nathan/Documents/pythonPractice/SportsStatsPython/NBASQL/nba_players.sql"

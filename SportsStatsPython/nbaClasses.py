@@ -1,15 +1,12 @@
-"""
-These are the best WORKING Player classes currently
-"""
 from nba_api.stats.static import players, teams
 from nba_api.stats.endpoints import playergamelog
 from nba_api.stats.library.parameters import SeasonAll
 import time
+
 # import pandas as pd
 # from nba_api.stats.endpoints import leaguegamefinder
 
-# TODO make the stats run faster, hopefully in a format that can use cython
-# currently working on stats vs specific teams
+# TODO currently working on adding advanced stats
 
 team_dict = teams.get_teams()
 player_dict = players.get_players()
@@ -78,7 +75,7 @@ class Player:  # import player information from dictionaries
 
             totalGames = 0
             for year in seasons:  # appends data frame of each season to careerStats
-                stats.append(Season(stats[0].gameData[totalGames:totalGames+seasons[year]]))  # splits seasons up
+                stats.append(Season(stats[0].gameData[totalGames:totalGames + seasons[year]]))  # splits seasons up
                 totalGames += seasons[year]
 
         return stats, seasons
@@ -106,8 +103,8 @@ class Season:
     def getNumberOfGames(self, team):
         team = getTeamAbbreviation(team)
         number = 0
-        for game in self.gameData:
-            if team in game['MATCHUP']:
+        for game in self.gameData['MATCHUP']:
+            if team in game:
                 number += 1
         return number
 
@@ -117,10 +114,9 @@ class Season:
         else:
             team = getTeamAbbreviation(team)
             totalPoints = 0
-            for game in self.gameData:
-                if team in game['MATCHUP']:
-                    totalPoints += game['PTS']
-
+            for game in self.gameData.iterrows():
+                if team in game[1]['MATCHUP']:
+                    totalPoints += game[1]['PTS']
         return totalPoints
 
     def getPPG(self, team=None):
@@ -136,15 +132,15 @@ class Season:
         else:
             team = getTeamAbbreviation(team)
             totalREB = 0
-            for game in self.gameData:
-                if team in game['MATCHUP']:
-                    totalREB += game['REB']
+            for game in self.gameData.iterrows():
+                if team in game[1]['MATCHUP']:
+                    totalREB += game[1]['REB']
 
         return totalREB
 
     def getRPG(self, team=None):
         if team is None:
-            return self.REB/len(self.gameData)
+            return self.REB / len(self.gameData)
         else:
             team = getTeamAbbreviation(team)
             return round(self.getREB(team) / self.getNumberOfGames(team), 2)
@@ -155,14 +151,14 @@ class Season:
         else:
             team = getTeamAbbreviation(team)
             totalAST = 0
-            for game in self.gameData:
-                if team in game['matchup']:
-                    totalAST += game['AST']
+            for game in self.gameData.iterrows():
+                if team in game[1]['MATCHUP']:
+                    totalAST += game[1]['AST']
         return totalAST
 
     def getAPG(self, team=None):
         if team is None:
-            return self.AST/len(self.gameData)
+            return self.AST / len(self.gameData)
         else:
             team = getTeamAbbreviation(team)
             return round(self.getAST(team) / self.getNumberOfGames(team), 2)
@@ -175,7 +171,8 @@ class Season:
 def getTeamAbbreviation(teamName):
     teamName = str(teamName).lower()
     for team in team_dict:
-        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName or team['city'].lower() == teamName or team['nickname'].lower() == teamName:
+        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName or team[
+            'city'].lower() == teamName or team['nickname'].lower() == teamName:
             return team['abbreviation'].upper()  # checks every element of full name, team abbreviation, mascot and city
     raise Exception('Team not found')
 
@@ -187,7 +184,7 @@ def getTime(name):
     return player
 
 
-# dame = getTime('Damian Lillard')
+dame = getTime('Damian Lillard')
 # jordan = Player('Michael Jordan')
 # wilt = Player('Wilt Chamberlain')
 
@@ -212,7 +209,7 @@ GSW_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=GSW_id).get_data_
 class Team:
     def __init__(self, teamName: str, roster=None):
         self.teamName = teamName
-        
+
     def addPlayer(self, player):
         if 
 '''

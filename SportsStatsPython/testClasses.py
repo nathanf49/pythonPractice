@@ -1,11 +1,12 @@
 from nba_api.stats.static import players, teams
-from nba_api.stats.endpoints import playergamelog
+import nba_api.stats.endpoints as n
 from nba_api.stats.library.parameters import SeasonAll
 import time
-# import pandas as pd
+
+import pandas as pd
 # from nba_api.stats.endpoints import leaguegamefinder
 
-# TODO currently working on adding advanced stats
+# TODO currently working on building full teams with getTeamCurrent. also want to check out more endpoints from nba_api
 
 team_dict = teams.get_teams()
 player_dict = players.get_players()
@@ -59,12 +60,12 @@ class Player:  # import player information from dictionaries
         if season is not None:  # getting a season, not the whole career
             while len(str(season)) != 4 or type(season) != int:
                 season = int(input('Please enter the season you want to update as a 4 digit year'))
-            stats = Season(playergamelog.PlayerGameLog(player_id=self.id, season=season).get_data_frames()[0])
+            stats = Season(n.playergamelog.PlayerGameLog(player_id=self.id, season=season).get_data_frames()[0])
             seasons = {season: len(stats.gameData)}
 
         else:
             # gets career dataframes from nba_api module, returns the dataframe of the career and each season
-            stats = [Season(playergamelog.PlayerGameLog(player_id=self.id, season=SeasonAll.all).get_data_frames()[0])]
+            stats = [Season(n.playergamelog.PlayerGameLog(player_id=self.id, season=SeasonAll.all).get_data_frames()[0])]
             seasons = {}
             for year in stats[0].gameData['SEASON_ID']:  # gets the number of games in each season
                 if year[-4:] not in seasons:
@@ -74,7 +75,7 @@ class Player:  # import player information from dictionaries
 
             totalGames = 0
             for year in seasons:  # appends data frame of each season to careerStats
-                stats.append(Season(stats[0].gameData[totalGames:totalGames+seasons[year]]))  # splits seasons up
+                stats.append(Season(stats[0].gameData[totalGames:totalGames + seasons[year]]))  # splits seasons up
                 totalGames += seasons[year]
 
         return stats, seasons
@@ -112,7 +113,6 @@ class Season:
             totalPoints = sum(self.gameData['PTS'])
         else:
             team = getTeamAbbreviation(team)
-            totalPoints = 0
             for game in self.gameData.iterrows():
                 if team in game[1]['MATCHUP']:
                     totalPoints += game[1]['PTS']
@@ -139,7 +139,7 @@ class Season:
 
     def getRPG(self, team=None):
         if team is None:
-            return self.REB/len(self.gameData)
+            return self.REB / len(self.gameData)
         else:
             team = getTeamAbbreviation(team)
             return round(self.getREB(team) / self.getNumberOfGames(team), 2)
@@ -157,7 +157,7 @@ class Season:
 
     def getAPG(self, team=None):
         if team is None:
-            return self.AST/len(self.gameData)
+            return self.AST / len(self.gameData)
         else:
             team = getTeamAbbreviation(team)
             return round(self.getAST(team) / self.getNumberOfGames(team), 2)
@@ -166,12 +166,46 @@ class Season:
         return self.season + ': ' + str(self.PPG) + '/' + str(self.RPG) + '/' + str(self.APG) + ', ' + \
                str(len(self.gameData)) + ' games played'
 
+def getCurrentTeams(team=None): # new function to get all the current players on all teams # Player must have played a game for the team
+    if team != None:
+        passed = False
+        while passed is not True:
+            try:
+                team = getTeamAbbreviation(str(team))
+                passed = True # ends loop to enter team name
+            except:
+                print('Team could not be found with that spelling. please try entering the full name or abbreviation of the team you are searching for.')
+
+    if team == None:
+        teams = {} # dictionary contains key of a team name (str) and values of a list of players
+    else: # teams is a list if we're only gathering 1 team
+        teams = []
+    NBAPlayers = players.get_active_players()
+    for x in NBAPlayers:
+        try: # not getting a response when calling line below for Bam Adebayo
+            playerTeam = n.playergamelog.PlayerGameLog(x['id']).get_data_frames()[0]["MATCHUP"][0].split(" ")[0] # player's team is always first team in matchup
+            if team == None: # searching through all teams
+                if playerTeam not in teams: # checks if team is in dictionary
+                    teams[playerTeam] = [x] # create a list in the dictionary for the team
+                else: # team is already in dictionary, add the player to the list
+                    teams[playerTeam].append(x)
+            else: # looking for 1 specific team
+                if playerTeam == team: #matches team
+                    teams.append(x) # add player to team
+
+
+        except: # player is not on a team or has not played any games (empty dataframe) or we're not getting a response from playergamelog
+            print('Could not get data for ' + str(x['full_name']))
+
+    return teams
+
 
 def getTeamAbbreviation(teamName):
     teamName = str(teamName).lower()
     for team in team_dict:
-        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName or team['city'].lower() == teamName or team['nickname'].lower() == teamName:
-            return team['abbreviation'].upper()  # checks every element of full name, team abbreviation, mascot and city
+        if teamName in list(team['full_name'].lower().split(' ')) or team['abbreviation'].lower() == teamName or team[
+            'city'].lower() == teamName or team['nickname'].lower() == teamName:
+            return team['abbreviation'].upper()  # checks every element of full name, team abbreviation, mascot and city to find a match
     raise Exception('Team not found')
 
 
@@ -181,8 +215,10 @@ def getTime(name):
     print(time.time() - start)
     return player
 
-
-# dame = getTime('Damian Lillard')
+if __name__ == "__main__":
+    myTeams = getCurrentTeams()#"Heat")
+    x+=1
+    #dame = getTime('Damian Lillard')
 # jordan = Player('Michael Jordan')
 # wilt = Player('Wilt Chamberlain')
 
@@ -207,7 +243,7 @@ GSW_games = leaguegamefinder.LeagueGameFinder(team_id_nullable=GSW_id).get_data_
 class Team:
     def __init__(self, teamName: str, roster=None):
         self.teamName = teamName
-        
+
     def addPlayer(self, player):
         if 
 '''

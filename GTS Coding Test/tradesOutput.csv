@@ -1,4 +1,4 @@
-LocalTime,Symbol,EventType,Side,FillSize,FillPrice,FillExchange,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional,ExchangeBought,ExchangeSold,TotalBought,TotalSold,TotalBoughtNotional,TotalSoldNotional
+LocalTime,Symbol,EventType,Side,FillSize,FillPrice,FillExchange,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional,ExchangeBought,ExchangeSold,TotalBought,TotalSold,TotalBoughtNotional,TotalSoldNotional,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional,ExchangeBought,ExchangeSold,TotalBought,TotalSold,TotalBoughtNotional,TotalSoldNotional
 9:30:00.000,AES,TRADE,t,100,11.14,NYSE,0,100,-100,1114,0,100,0,100,0,1114
 9:30:16.000,AES,TRADE,b,100,11.16,NASDAQ,100,100,0,1116,100,0,100,100,1116,1114
 9:31:02.000,CX,TRADE,b,100,7.50,NASDAQ,100,0,100,750,200,0,200,100,1866,1114
@@ -300,7 +300,7 @@ LocalTime,Symbol,EventType,Side,FillSize,FillPrice,FillExchange,SymbolBought,Sym
 11:58:14.000,BO,TRADE,b,49786,12.47,NYSE,241808,170688,71120,620831,728782,202893,2004509,1818865,11673277,10139723
 11:58:26.000,BO,TRADE,b,21336,12.47,NYSE,263144,170688,92456,266059,750118,202893,2025845,1818865,11939336,10139723
 11:59:19.000,BO,TRADE,b,14224,12.47,NYSE,277368,170688,106680,177373,764342,202893,2040069,1818865,12116709,10139723
-12:00:00.000,LNCH,TIME,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional,ExchangeBought,ExchangeSold,TotalBought,TotalSold,TotalBoughtNotional,TotalSoldNotional
+12:00:00.000,LNCH,TIME,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional,ExchangeBought,ExchangeSold,TotalBought,TotalSold,TotalBoughtNotional,TotalSoldNotional,SymbolBought,SymbolSold,SymbolPosition,SymbolNotional
 12:00:04.000,BO,TRADE,b,78235,12.47,NYSE,355603,170688,184915,975590,842577,202893,2118304,1818865,13092299,10139723
 12:00:47.000,BO,TRADE,t,7112,12.47,NASDAQ,355603,177800,177803,88686,1275727,1623084,2118304,1825977,13092299,10228409
 12:01:04.000,BO,TRADE,b,149358,12.47,NASDAQ,504961,177800,327161,1862494,1425085,1623084,2267662,1825977,14954793,10228409
